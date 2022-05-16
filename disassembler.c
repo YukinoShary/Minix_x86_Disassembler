@@ -58,8 +58,12 @@ unsigned char* read_buffer;
 unsigned char* instruction_cache;
 instructions_list* asem_result;     /*save result*/
 int *buffer_ptr;
+char hex[16] = "0123456789ABCDEF"; 
 
 void byte2binary(int decimal, char* binary_text);
+void read_header(exec* hdr, char* openfile);
+int convertBinaryToHexadecimal(int n);
+char* register_addressing(char* reg);
 char* text_to_instruction(exec* hdr);
 void mov_I2R_interpreter(instruction *ins, char* binary_data);
 void int_TS_interpreter(instruction *ins, char* binary_data);
@@ -70,8 +74,6 @@ int main(int argc, char* argv[])
 {
     exec* hd;
     FILE* fp;
-    int i;
-    fp = fopen(argv[1], "rb");
     read_buffer = malloc(16 * 1024);
     asem_result = malloc(sizeof(instructions_list));
     asem_result->length = 0;
@@ -79,15 +81,16 @@ int main(int argc, char* argv[])
     instruction_cache = malloc(1024);
     hd = malloc(sizeof(exec));
 
-    read_header();
+    read_header(hd, argv[1]);
     text_to_instruction(hd);
     free(read_buffer);
 }
 
-void read_header(exec* hdr, FILE* fp)
+void read_header(exec* hdr, char* openfile)
 {
     size_t file_size;
     unsigned char binary2long[4] = {0};
+    fp = fopen(argv[1], "rb");
     fread(&hdr->a_magic[0], sizeof(unsigned char), 1, fp);
     fread(&hdr->a_magic[1], sizeof(unsigned char), 1, fp);
     fread(&hdr->a_flags, sizeof(unsigned char), 1, fp);
@@ -188,6 +191,45 @@ void list_add(instruction_node* node)
     }
 }
 
+char* register_addressing(char* reg)
+{
+    switch (reg))
+    {
+    case "000":
+        return "AX"
+        break;
+    case "001":
+        return "CX";
+        break;
+    case "010":
+        return "DX";
+        break;
+    case "011":
+        return "BX";
+        break;
+    case "100":
+        return "SP";
+        break;
+    case "101":
+        return "BP";
+        break;
+    case "110":
+        return "SI";
+        break;
+    case "111":
+        return "DI";
+        break;
+    default:
+        printf("register addressing error\n");
+        return "";
+        break;
+    }
+}
+
+char* convertBinaryToHexadecimal(char* inStr)
+{
+    
+}
 
 char* text_to_instruction(exec* hdr)
 {
@@ -243,10 +285,12 @@ char* text_to_instruction(exec* hdr)
     
 }
 
+/*have to solve the little endian problem*/
 void mov_I2R_interpreter(instruction *ins, char* binary_data)
 {
-    int i, decimal;
+    int i, decimal, hexadecimal, binary, n, k;
     instruction_node* node;
+    char* reg[3];
     node = malloc(sizeof(instruction_node));
     for(i = 4; i <= 7; i++)
     {
@@ -270,17 +314,61 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
     
     if(ins->w == '1')
     {
+        /*solve little endian*/
+        ins->data1 = ins->data0;
+
         decimal = (int)read_buffer[*buffer_ptr];
         *buffer_ptr ++;
         byte2binary(decimal, binary_data);
         for(i = 0; i <= 7; i++)
         {
-            ins->data1[i] = binary_data[i];
+            ins->data0[i] = binary_data[i];
         }
         ins->length = 24;
     }
 
-    /*TODO: set the asem*/
+    /*set the asem text*/
+    ins->asem[0] = 'M';
+    ins->asem[1] = 'O';
+    ins->asem[2] = 'V';
+    ins->asem[3] = ' ';
+    reg = register_addressing(ins->reg);
+    for(i = 0; i <= 2; i++)
+    {
+        ins->asem[i + 4] = reg[i];
+    }
+    ins->asem[7] = ',';
+    ins->asem[8] = ' ';
+    binary = atoi(ins->data0);
+    hexadecimal = convertBinaryToHexadecimal(binary);
+    printf("data: &d\n", hexadecimal);
+    if(decimal < 16)
+    {
+        ins->asem[9] = 0;
+        ins->asem[10] = hexadecimal;
+    }
+    else
+    {
+        ins->asem[9] = hexadecimal / 16;
+        ins->asem[10] = hexadecimal % 16;
+    }
+
+    if(ins->w = '1')
+    {
+        binary = atoi(ins->data1);
+        decimal = convertBinaryToHexadecimal(binary);
+        printf("data: &d\n", decimal);
+        if(decimal < 10)
+        {
+            ins->asem[11] = 0;
+            ins->asem[12] = hexadecimal;
+        }
+        else
+        {
+            ins->asem[11] = hexadecimal / 16;
+            ins->asem[12] = hexadecimal % 16;
+        } 
+    }
 
     node->ins = ins;
     list_add(node);
