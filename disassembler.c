@@ -31,7 +31,7 @@ typedef struct instruction
     char reg[3];
     char w;
     char d;
-    char mod[3];
+    char mod[2];
     char rm[2];
     char data0[8];
     char data1[8];
@@ -55,15 +55,14 @@ typedef struct instructions_list
 }   instructions_list;
 
 unsigned char* read_buffer;         
-unsigned char* instruction_cache;
 instructions_list* asem_result;     /*save result*/
-int *buffer_ptr;
-char hex[16] = "0123456789ABCDEF"; 
+int *buffer_ptr; 
 
-void byte2binary(int decimal, char* binary_text);
+void decimal2binary(int decimal, char* binary_text);
 void read_header(exec* hdr, char* openfile);
-int convertBinaryToHexadecimal(int n);
-char* register_addressing(char* reg);
+char* convertBinaryToHexadecimal(char binary[8]);
+char* register_addressing_8bit(char* reg)
+char* register_addressing_16bit(char* reg);
 char* text_to_instruction(exec* hdr);
 void mov_I2R_interpreter(instruction *ins, char* binary_data);
 void int_TS_interpreter(instruction *ins, char* binary_data);
@@ -162,7 +161,7 @@ void read_header(exec* hdr, char* openfile)
 }
 
 /*byte to binary*/
-void byte2binary(int decimal, char* binary_data)
+void decimal2binary(int decimal, char* binary_data)
 {
     int and_cul;
     and_cul = 255;
@@ -191,9 +190,44 @@ void list_add(instruction_node* node)
     }
 }
 
-char* register_addressing(char* reg)
+char* register_addressing_8bit(char reg[3])
 {
-    switch (reg))
+    switch(*reg)
+    {
+    case "000":
+        return "AL"
+        break;
+    case "001":
+        return "CL";
+        break;
+    case "010":
+        return "DL";
+        break;
+    case "011":
+        return "BL";
+        break;
+    case "100":
+        return "AH";
+        break;
+    case "101":
+        return "CH";
+        break;
+    case "110":
+        return "DH";
+        break;
+    case "111":
+        return "BH";
+        break;
+    default:
+        printf("register addressing error\n");
+        return "";
+        break;
+    }
+}
+
+char* register_addressing_16bit(char reg[3])
+{
+    switch (*reg)
     {
     case "000":
         return "AX"
@@ -226,9 +260,123 @@ char* register_addressing(char* reg)
     }
 }
 
-char* convertBinaryToHexadecimal(char* inStr)
+char* convertBinaryToHexadecimal(char binary[8])
 {
-    
+    char front[4], rear[4], result[2];
+    int i;
+    for (i = 0; i <= 3; i++)
+    {
+        front[i] = binary[i];
+    }
+    for(i = 0; i <= 3; i++)
+    {
+        rear[i] = binary[i + 4];
+    }
+
+    switch (*front)
+    {
+    case "0000":
+        result[0] = '0';
+        break;
+    case "0001":
+        result[0] = '1';
+        break;
+    case "0010":
+        result[0] = '2';
+        break;
+    case "0011":
+        result[0] = '3';
+        break;
+    case "0100":
+        result[0] = '4';
+        break;
+    case "0101":
+        result[0] = '5';
+        break;
+    case "0110":
+        result[0] = '6';
+        break;
+    case "0111":
+        result[0] = '7';
+        break;
+    case "1000":
+        result[0] = '8';
+        break;
+    case "1001":
+        result[0] = '9';
+        break;
+    case "1010":
+        result[0] = 'A';
+        break;
+    case "1011":
+        result[0] = 'B';
+        break;
+    case "1100":
+        result[0] = 'C';
+        break;
+    case "1101":
+        result[0] = 'D';
+        break;
+    case "1110":
+        result[0] = 'E';
+        break;
+    case "1111":
+        result[0] = 'F';
+        break;
+    }
+
+    switch (*rear)
+    {
+    case "0000":
+        result[1] = '0';
+        break;
+    case "0001":
+        result[1] = '1';
+        break;
+    case "0010":
+        result[1] = '2';
+        break;
+    case "0011":
+        result[1] = '3';
+        break;
+    case "0100":
+        result[1] = '4';
+        break;
+    case "0101":
+        result[1] = '5';
+        break;
+    case "0110":
+        result[1] = '6';
+        break;
+    case "0111":
+        result[1] = '7';
+        break;
+    case "1000":
+        result[1] = '8';
+        break;
+    case "1001":
+        result[1] = '9';
+        break;
+    case "1010":
+        result[1] = 'A';
+        break;
+    case "1011":
+        result[1] = 'B';
+        break;
+    case "1100":
+        result[1] = 'C';
+        break;
+    case "1101":
+        result[1] = 'D';
+        break;
+    case "1110":
+        result[1] = 'E';
+        break;
+    case "1111":
+        result[1] = 'F';
+        break;
+    }
+    return result;
 }
 
 char* text_to_instruction(exec* hdr)
@@ -246,7 +394,7 @@ char* text_to_instruction(exec* hdr)
         /*read one byte*/
         decimal = (int)read_buffer[*buffer_ptr];
         *buffer_ptr ++;
-        byte2binary(decimal, binary_data);
+        decimal2binary(decimal, binary_data);
 
         /*read binary text into instruction struct*/
         i = 0;
@@ -270,6 +418,8 @@ char* text_to_instruction(exec* hdr)
                 }
                 if(ins->seg_1 == "1101")
                     int_TS_interpreter(ins, binary_data);
+                else if(ins->seg_1 == "1100")
+
                 break; 
             case "0000":
                 for(i = 4; i <= 7; i++)
@@ -288,9 +438,9 @@ char* text_to_instruction(exec* hdr)
 /*have to solve the little endian problem*/
 void mov_I2R_interpreter(instruction *ins, char* binary_data)
 {
-    int i, decimal, hexadecimal, binary, n, k;
+    int i, decimal, n, k;
     instruction_node* node;
-    char* reg[3];
+    char reg[3], *hexadecimal;
     node = malloc(sizeof(instruction_node));
     for(i = 4; i <= 7; i++)
     {
@@ -302,10 +452,10 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
         ins->reg[i - 1] = ins->seg_1[i];
     }
 
-    /*continue to read data*/
+    /*second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    byte2binary(decimal, binary_data);
+    decimal2binary(decimal, binary_data);
     for(i = 0; i <= 7; i++)
     {
         ins->data0[i] = binary_data[i];
@@ -314,12 +464,10 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
     
     if(ins->w == '1')
     {
-        /*solve little endian*/
-        ins->data1 = ins->data0;
-
+        /*third byte*/
         decimal = (int)read_buffer[*buffer_ptr];
         *buffer_ptr ++;
-        byte2binary(decimal, binary_data);
+        decimal2binary(decimal, binary_data);
         for(i = 0; i <= 7; i++)
         {
             ins->data0[i] = binary_data[i];
@@ -332,42 +480,32 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
     ins->asem[1] = 'O';
     ins->asem[2] = 'V';
     ins->asem[3] = ' ';
-    reg = register_addressing(ins->reg);
+    reg = register_addressing_16bit(ins->reg);
     for(i = 0; i <= 2; i++)
     {
         ins->asem[i + 4] = reg[i];
     }
     ins->asem[7] = ',';
     ins->asem[8] = ' ';
-    binary = atoi(ins->data0);
-    hexadecimal = convertBinaryToHexadecimal(binary);
-    printf("data: &d\n", hexadecimal);
-    if(decimal < 16)
-    {
-        ins->asem[9] = 0;
-        ins->asem[10] = hexadecimal;
+    if(ins->w = '1')
+    {   
+        /*little endian*/
+        hexadecimal = convertBinaryToHexadecimal(ins->data1);
+        printf("data: %s\n", hexadecimal);
+        ins->asem[9] = hexadecimal[0];
+        ins->asem[10] = hexadecimal[1];
+
+        hexadecimal = convertBinaryToHexadecimal(ins->data0);
+        printf("data: %s\n", hexadecimal);
+        ins->asem[11] = hexadecimal[0];
+        ins->asem[12] = hexadecimal[1];      
     }
     else
     {
-        ins->asem[9] = hexadecimal / 16;
-        ins->asem[10] = hexadecimal % 16;
-    }
-
-    if(ins->w = '1')
-    {
-        binary = atoi(ins->data1);
-        decimal = convertBinaryToHexadecimal(binary);
-        printf("data: &d\n", decimal);
-        if(decimal < 10)
-        {
-            ins->asem[11] = 0;
-            ins->asem[12] = hexadecimal;
-        }
-        else
-        {
-            ins->asem[11] = hexadecimal / 16;
-            ins->asem[12] = hexadecimal % 16;
-        } 
+        hexadecimal = convertBinaryToHexadecimal(ins->data0);
+        printf("data: %s\n", hexadecimal);
+        ins->asem[9] = hexadecimal[0];
+        ins->asem[10] = hexadecimal[1]; 
     }
 
     node->ins = ins;
@@ -376,19 +514,27 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
 
 void int_TS_interpreter(instruction *ins, char* binary_data)
 {
-    int i, decimal;
+    int i, decimal, hexadecimal;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    byte2binary(decimal, binary_data)
+    decimal2binary(decimal, binary_data)
     for(i = 0; i <= 7; i++)
     {
         ins->type[i] = binary_data[i];
     }
     ins->length = 16;
 
-    /*TODO: set the asem*/
+    /*set the asem*/
+    ins->asem[0] = 'I';
+    ins->asem[1] = 'N';
+    ins->asem[2] = 'T';
+    ins->asem[3] = ' ';
+    hexadecimal = binary2hexadecimal(ins->type);
+    printf("type: %s\n", hexadecimal);
+    ins->asem[4] = hexadecimal[0];
+    ins->asem[5] = hexadecimal[1];
 
     node->ins = ins;
     list_add(node);
@@ -397,29 +543,66 @@ void int_TS_interpreter(instruction *ins, char* binary_data)
 void add_RMR2E_interpreter(instruction *ins, char* binary_data)
 {
     int i, decimal;
+    char *hexadecimal;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
     ins->d = ins->seg_1[2];
     ins->w = ins->seg_1[3];
+
+    /*second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    byte2binary(decimal, binary_data);
+    decimal2binary(decimal, binary_data);
 
-    for(i = 0; i <= 2; i++)
+    for(i = 0; i <= 1; i++)
     {
         ins->mod[i] = binary_data[i];
     }
-    for(i = 3; i <= 5; i++)
+    for(i = 2; i <= 4; i++)
     {
         ins->reg[i - 3] = binary_data[i];
     }
-    for(i = 6; i <= 7; i++)
+    for(i = 5; i <= 7; i++)
     {
         ins->rm[i - 6] = binary_data[i];
     }
     ins->length = 16;
 
-    /*TODO: set the asem*/
+    /*set the asem*/
+    ins->asem[0] = 'A';
+    ins->asem[1] = 'D';
+    ins->asem[2] = 'D';
+    ins->asem[3] = ' ';
+    if(ins->d = '1')
+    {
+        if(ins->w = '0')
+        {
+            hexadecimal = register_addressing_8bit(ins->reg);
+        }
+        else
+        {
+            hexadecimal = register_addressing_16bit(ins->reg);
+        }
+        ins->asem[4] = hexadecimal[0];
+        ins->asem[5] = hexadecimal[1];
+        ins->asem[6] = ',';
+        ins->asem[7] = ' ';
+        
+    }
+    else
+    {
+        switch (ins->mod)
+        {
+        case "00":
+            hexadecimal = register_addressing_8bit(ins->rm);
+            
+            break;
+        case "11":
+            break;
+        default:
+            break;
+        })
+    }
 
     node->ins = ins;
     list_add(node);
