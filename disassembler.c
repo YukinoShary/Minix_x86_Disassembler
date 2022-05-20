@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct exec
 {
@@ -61,7 +62,7 @@ int *buffer_ptr;
 void decimal2binary(int decimal, char* binary_text);
 void read_header(exec* hdr, char* openfile);
 char* convertBinaryToHexadecimal(char binary[8]);
-char* register_addressing_8bit(char* reg)
+char* register_addressing_8bit(char* reg);
 char* register_addressing_16bit(char* reg);
 char* text_to_instruction(exec* hdr);
 void mov_I2R_interpreter(instruction *ins, char* binary_data);
@@ -72,14 +73,11 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data);
 int main(int argc, char* argv[])
 {
     exec* hd;
-    FILE* fp;
     read_buffer = malloc(16 * 1024);
     asem_result = malloc(sizeof(instructions_list));
     asem_result->length = 0;
     asem_result->front = NULL;
-    instruction_cache = malloc(1024);
     hd = malloc(sizeof(exec));
-
     read_header(hd, argv[1]);
     text_to_instruction(hd);
     free(read_buffer);
@@ -87,9 +85,11 @@ int main(int argc, char* argv[])
 
 void read_header(exec* hdr, char* openfile)
 {
+    FILE* fp;
     size_t file_size;
+    int i;
     unsigned char binary2long[4] = {0};
-    fp = fopen(argv[1], "rb");
+    fp = fopen(openfile, "rb");
     fread(&hdr->a_magic[0], sizeof(unsigned char), 1, fp);
     fread(&hdr->a_magic[1], sizeof(unsigned char), 1, fp);
     fread(&hdr->a_flags, sizeof(unsigned char), 1, fp);
@@ -154,10 +154,10 @@ void read_header(exec* hdr, char* openfile)
     hdr->a_syms = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
         (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
     
-    *buffer_ptr = (int)hd->a_hdrlen;
-    printf("a_hdrlen:%hhu\n", hd->a_hdrlen);
+    *buffer_ptr = (int)hdr->a_hdrlen;
+    printf("a_hdrlen:%hhu\n", hdr->a_hdrlen);
     printf("buffer pointer position:%d\n", *buffer_ptr);
-    printf("text length:%ld\n", hd->a_text);
+    printf("text length:%ld\n", hdr->a_text);
 }
 
 /*byte to binary*/
@@ -192,72 +192,42 @@ void list_add(instruction_node* node)
 
 char* register_addressing_8bit(char reg[3])
 {
-    switch(*reg)
-    {
-    case "000":
-        return "AL"
-        break;
-    case "001":
+    if(strcmp(reg, "000") == 0)
+        return "AL";
+    if(strcmp(reg, "001") == 0)
         return "CL";
-        break;
-    case "010":
+    if(strcmp(reg, "010") == 0)
         return "DL";
-        break;
-    case "011":
+    if(strcmp(reg, "011") == 0)
         return "BL";
-        break;
-    case "100":
+    if(strcmp(reg, "100") == 0)
         return "AH";
-        break;
-    case "101":
+    if(strcmp(reg, "101") == 0)
         return "CH";
-        break;
-    case "110":
+    if(strcmp(reg, "110") == 0)
         return "DH";
-        break;
-    case "111":
+    if(strcmp(reg, "111") == 0)
         return "BH";
-        break;
-    default:
-        printf("register addressing error\n");
-        return "";
-        break;
-    }
 }
 
 char* register_addressing_16bit(char reg[3])
 {
-    switch (*reg)
-    {
-    case "000":
-        return "AX"
-        break;
-    case "001":
+    if(strcmp(reg, "000") == 0)
+        return "AX";
+    if(strcmp(reg, "001") == 0)
         return "CX";
-        break;
-    case "010":
+    if(strcmp(reg, "010") == 0)
         return "DX";
-        break;
-    case "011":
+    if(strcmp(reg, "011") == 0)
         return "BX";
-        break;
-    case "100":
+    if(strcmp(reg, "100") == 0)
         return "SP";
-        break;
-    case "101":
+    if(strcmp(reg, "101") == 0)
         return "BP";
-        break;
-    case "110":
+    if(strcmp(reg, "110") == 0)
         return "SI";
-        break;
-    case "111":
+    if(strcmp(reg, "111") == 0)
         return "DI";
-        break;
-    default:
-        printf("register addressing error\n");
-        return "";
-        break;
-    }
 }
 
 char* convertBinaryToHexadecimal(char binary[8])
@@ -273,109 +243,71 @@ char* convertBinaryToHexadecimal(char binary[8])
         rear[i] = binary[i + 4];
     }
 
-    switch (*front)
-    {
-    case "0000":
+    if(strcmp(front, "0000") == 0)
         result[0] = '0';
-        break;
-    case "0001":
+    if(strcmp(front, "0001") == 0)
         result[0] = '1';
-        break;
-    case "0010":
+    if(strcmp(front, "0010") == 0)
         result[0] = '2';
-        break;
-    case "0011":
+    if(strcmp(front, "0011") == 0)
         result[0] = '3';
-        break;
-    case "0100":
+    if(strcmp(front, "0100") == 0)
         result[0] = '4';
-        break;
-    case "0101":
+    if(strcmp(front, "0101") == 0)
         result[0] = '5';
-        break;
-    case "0110":
+    if(strcmp(front, "0110") == 0)
         result[0] = '6';
-        break;
-    case "0111":
+    if(strcmp(front, "0111") == 0)
         result[0] = '7';
-        break;
-    case "1000":
+    if(strcmp(front, "1000") == 0)
         result[0] = '8';
-        break;
-    case "1001":
+    if(strcmp(front, "1001") == 0)
         result[0] = '9';
-        break;
-    case "1010":
+    if(strcmp(front, "1010") == 0)
         result[0] = 'A';
-        break;
-    case "1011":
+    if(strcmp(front, "1011") == 0)
         result[0] = 'B';
-        break;
-    case "1100":
+    if(strcmp(front, "1100") == 0)
         result[0] = 'C';
-        break;
-    case "1101":
+    if(strcmp(front, "1101") == 0)
         result[0] = 'D';
-        break;
-    case "1110":
+    if(strcmp(front, "1110") == 0)
         result[0] = 'E';
-        break;
-    case "1111":
+    if(strcmp(front, "1111") == 0)
         result[0] = 'F';
-        break;
-    }
-
-    switch (*rear)
-    {
-    case "0000":
+    
+    if(strcmp(front, "0000") == 0)
         result[1] = '0';
-        break;
-    case "0001":
+    if(strcmp(front, "0001") == 0)
         result[1] = '1';
-        break;
-    case "0010":
+    if(strcmp(front, "0010") == 0)
         result[1] = '2';
-        break;
-    case "0011":
+    if(strcmp(front, "0011") == 0)
         result[1] = '3';
-        break;
-    case "0100":
+    if(strcmp(front, "0100") == 0)
         result[1] = '4';
-        break;
-    case "0101":
+    if(strcmp(front, "0101") == 0)
         result[1] = '5';
-        break;
-    case "0110":
+    if(strcmp(front, "0110") == 0)
         result[1] = '6';
-        break;
-    case "0111":
+    if(strcmp(front, "0111") == 0)
         result[1] = '7';
-        break;
-    case "1000":
+    if(strcmp(front, "1000") == 0)
         result[1] = '8';
-        break;
-    case "1001":
+    if(strcmp(front, "1001") == 0)
         result[1] = '9';
-        break;
-    case "1010":
+    if(strcmp(front, "1010") == 0)
         result[1] = 'A';
-        break;
-    case "1011":
+    if(strcmp(front, "1011") == 0)
         result[1] = 'B';
-        break;
-    case "1100":
+    if(strcmp(front, "1100") == 0)
         result[1] = 'C';
-        break;
-    case "1101":
+    if(strcmp(front, "1101") == 0)
         result[1] = 'D';
-        break;
-    case "1110":
+    if(strcmp(front, "1110") == 0)
         result[1] = 'E';
-        break;
-    case "1111":
+    if(strcmp(front, "1111") == 0)
         result[1] = 'F';
-        break;
-    }
     return result;
 }
 
@@ -404,33 +336,27 @@ char* text_to_instruction(exec* hdr)
             i ++;
         }
 
-        switch ((int)(ins->seg_0))
+        if(strcmp(ins->seg_0, "1011") == 0)
+            mov_I2R_interpreter(ins, binary_data);
+        else if(strcmp(ins->seg_0, "1100") == 0)
         {
-            /*mov*/
-            case "1011":
-                mov_interpreter(ins, binary_data);
-            break;
-            /*int*/
-            case "1100": 
-                for(i = 4; i <= 7; i++)
-                {
-                    ins->seg_1[i] = binary_data[i];
-                }
-                if(ins->seg_1 == "1101")
-                    int_TS_interpreter(ins, binary_data);
-                else if(ins->seg_1 == "1100")
-
-                break; 
-            case "0000":
-                for(i = 4; i <= 7; i++)
-                {
-                    ins->seg_1[i] = binary_data[i];
-                }
-                if(ins->seg_1[0] == '0' && ins->seg_1[1] == '0')
-                    add_RMR2E_interpreter(ins, binary_data);
-            default:
-            /*continue reading*/
+            for(i = 4; i <= 7; i++)
+            {
+                ins->seg_1[i] = binary_data[i];
+            }
+            if(ins->seg_1 == "1101")
+                int_TS_interpreter(ins, binary_data);
         }
+        else if(strcmp(ins->seg_0, "0000") == 0)
+        {
+            for(i = 4; i <= 7; i++)
+            {
+                ins->seg_1[i] = binary_data[i];
+            }
+            if(ins->seg_1[0] == '0' && ins->seg_1[1] == '0')
+                add_RMR2E_interpreter(ins, binary_data);
+        }
+
     }
     
 }
@@ -440,7 +366,7 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
 {
     int i, decimal, n, k;
     instruction_node* node;
-    char reg[3], *hexadecimal;
+    char* reg, *hexadecimal;
     node = malloc(sizeof(instruction_node));
     for(i = 4; i <= 7; i++)
     {
@@ -514,12 +440,13 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
 
 void int_TS_interpreter(instruction *ins, char* binary_data)
 {
-    int i, decimal, hexadecimal;
+    int i, decimal;
+    char* hexadecimal;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data)
+    decimal2binary(decimal, binary_data);
     for(i = 0; i <= 7; i++)
     {
         ins->type[i] = binary_data[i];
@@ -531,7 +458,7 @@ void int_TS_interpreter(instruction *ins, char* binary_data)
     ins->asem[1] = 'N';
     ins->asem[2] = 'T';
     ins->asem[3] = ' ';
-    hexadecimal = binary2hexadecimal(ins->type);
+    hexadecimal = convertBinaryToHexadecimal(ins->type);
     printf("type: %s\n", hexadecimal);
     ins->asem[4] = hexadecimal[0];
     ins->asem[5] = hexadecimal[1];
@@ -543,7 +470,7 @@ void int_TS_interpreter(instruction *ins, char* binary_data)
 void add_RMR2E_interpreter(instruction *ins, char* binary_data)
 {
     int i, decimal;
-    char *hexadecimal;
+    char *hexadecimal, *binary, *disp;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
     ins->d = ins->seg_1[2];
@@ -573,6 +500,7 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data)
     ins->asem[1] = 'D';
     ins->asem[2] = 'D';
     ins->asem[3] = ' ';
+    /*to reg*/
     if(ins->d = '1')
     {
         if(ins->w = '0')
@@ -587,21 +515,34 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data)
         ins->asem[5] = hexadecimal[1];
         ins->asem[6] = ',';
         ins->asem[7] = ' ';
-        
+        ins->asem[8] = '[';
+        /*TODO: r/m & disp*/
     }
+    /*from reg (reg behind)*/
     else
     {
-        switch (ins->mod)
+        ins->asem[8] = '[';
+        if(ins->w = '0')
         {
-        case "00":
-            hexadecimal = register_addressing_8bit(ins->rm);
-            
-            break;
-        case "11":
-            break;
-        default:
-            break;
-        })
+            hexadecimal = register_addressing_8bit(ins->reg);
+        }
+        else
+        {
+            hexadecimal = register_addressing_16bit(ins->reg);
+        }
+
+        if(strcpm(ins->rm, "000") == 0)
+        {
+            ins->asem[9] = 'B';
+            ins->asem[10] = 'X';
+            ins->asem[11] = ' ';
+            ins->asem[12] = '+';
+            ins->asem[13] = 'SI';
+            if(strcmp(ins->mod, "00") == 0)
+            {
+                ins->asem[14] = ']';
+            }
+        }
     }
 
     node->ins = ins;
