@@ -422,7 +422,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     /*from reg (reg behind)*/
     else
     {
-        ins->asem[8] = '[';
+        ins->asem[offset] = '[';
         if(ins->w = '0')
         {
             hexadecimal = register_addressing_8bit(ins->reg);
@@ -431,16 +431,23 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         {
             hexadecimal = register_addressing_16bit(ins->reg);
         }
-        if(strcmp(ins->mod, ""))
-        if(strcpm(ins->rm, "000") == 0)
+        if(strcmp(ins->mod, "00") == 0)
         {
-            ins->asem[offset + 5] = 'B';
-            ins->asem[offset + 6] = 'X';
-            ins->asem[offset + 7] = ' ';
-            ins->asem[offset + 8] = '+';
-            ins->asem[offset + 9] = 'SI';
-            
+            if(strcpm(ins->rm, "000") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'S';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = ']';
+                ins->asem[offset + 7] = ',';
+                ins->asem[offset + 8] = ' ';
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+            }
         }
+        
     }
 }
 
@@ -546,37 +553,37 @@ char* convertBinaryToHexadecimal(char* binary)
     if(strcmp(front, "1111") == 0)
         result[0] = 'F';
     
-    if(strcmp(front, "0000") == 0)
+    if(strcmp(rear, "0000") == 0)
         result[1] = '0';
-    if(strcmp(front, "0001") == 0)
+    if(strcmp(rear, "0001") == 0)
         result[1] = '1';
-    if(strcmp(front, "0010") == 0)
+    if(strcmp(rear, "0010") == 0)
         result[1] = '2';
-    if(strcmp(front, "0011") == 0)
+    if(strcmp(rear, "0011") == 0)
         result[1] = '3';
-    if(strcmp(front, "0100") == 0)
+    if(strcmp(rear, "0100") == 0)
         result[1] = '4';
-    if(strcmp(front, "0101") == 0)
+    if(strcmp(rear, "0101") == 0)
         result[1] = '5';
-    if(strcmp(front, "0110") == 0)
+    if(strcmp(rear, "0110") == 0)
         result[1] = '6';
-    if(strcmp(front, "0111") == 0)
+    if(strcmp(rear, "0111") == 0)
         result[1] = '7';
-    if(strcmp(front, "1000") == 0)
+    if(strcmp(rear, "1000") == 0)
         result[1] = '8';
-    if(strcmp(front, "1001") == 0)
+    if(strcmp(rear, "1001") == 0)
         result[1] = '9';
-    if(strcmp(front, "1010") == 0)
+    if(strcmp(rear, "1010") == 0)
         result[1] = 'A';
-    if(strcmp(front, "1011") == 0)
+    if(strcmp(rear, "1011") == 0)
         result[1] = 'B';
-    if(strcmp(front, "1100") == 0)
+    if(strcmp(rear, "1100") == 0)
         result[1] = 'C';
-    if(strcmp(front, "1101") == 0)
+    if(strcmp(rear, "1101") == 0)
         result[1] = 'D';
-    if(strcmp(front, "1110") == 0)
+    if(strcmp(rear, "1110") == 0)
         result[1] = 'E';
-    if(strcmp(front, "1111") == 0)
+    if(strcmp(rear, "1111") == 0)
         result[1] = 'F';
     return result;
 }
