@@ -176,7 +176,8 @@ void decimal2binary(int decimal, char* binary_data)
     }
 }
 
-/*handle the r/m mod reg and disp*/
+/*Handle the r/m mod reg and disp*/
+/*It is a really huge function*/
 void MOD_RM_REG_process(instruction* ins, int offset)
 {
     int i, decimal;
@@ -212,6 +213,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = 'S';
                 ins->asem[offset + 9] = 'I';
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "001") == 0)
             {
@@ -221,6 +223,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = 'D';
                 ins->asem[offset + 9] = 'I';
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "010") == 0)
             {
@@ -230,6 +233,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = 'S';
                 ins->asem[offset + 9] = 'I';
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "011") == 0)
             {
@@ -239,18 +243,21 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = 'D';
                 ins->asem[offset + 9] = 'I';
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "100") == 0)
             {
                 ins->asem[offset + 5] = 'S';
                 ins->asem[offset + 6] = 'I';
                 ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = '\0';
             }
             if(strcmp(ins->rm, "101") == 0)
             {
                 ins->asem[offset + 5] = 'D';
                 ins->asem[offset + 6] = 'I';
                 ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = '\0';
             }
             /*here is an exception*/
             if(strcmp(ins->rm, "110") == 0)
@@ -284,12 +291,14 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
+                ins->asem[offset + 13] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
                 ins->asem[offset + 5] = 'B';
                 ins->asem[offset + 6] = 'X';
                 ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = '\0';
             }
         }
         
@@ -337,6 +346,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 11] = hexadecimal[0];
                 ins->asem[offset + 12] = hexadecimal[1];
                 ins->asem[offset + 13] = ']';
+                ins->asem[offset + 14] = '\0';
             }
             if(strcmp(ins->rm, "001") == 0)
             {
@@ -349,6 +359,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 11] = hexadecimal[0];
                 ins->asem[offset + 12] = hexadecimal[1];
                 ins->asem[offset + 13] = ']';
+                ins->asem[offset + 14] = '\0';
             }
             if(strcmp(ins->rm, "010") == 0)
             {
@@ -361,6 +372,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 11] = hexadecimal[0];
                 ins->asem[offset + 12] = hexadecimal[1];
                 ins->asem[offset + 13] = ']';
+                ins->asem[offset + 14] = '\0';
             }
             if(strcmp(ins->rm, "011") == 0)
             {
@@ -373,6 +385,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 11] = hexadecimal[0];
                 ins->asem[offset + 12] = hexadecimal[1];
                 ins->asem[offset + 13] = ']';
+                ins->asem[offset + 14] = '\0';
             }
             if(strcmp(ins->rm, "100") == 0)
             {
@@ -382,6 +395,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 14] = '\0';
             }
             if(strcmp(ins->rm, "101") == 0)
             {
@@ -391,6 +405,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "110") == 0)
             {
@@ -400,6 +415,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
@@ -409,6 +425,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
                 ins->asem[offset + 10] = ']';
+                ins->asem[offset + 11] = '\0';
             }
         }
         else if(strcmp(ins->mod, "10") == 0)
@@ -446,6 +463,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
+                ins->asem[offset + 15] = '\0';
             }
             if(strcmp(ins->rm, "001") == 0)
             {
@@ -461,6 +479,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
+                ins->asem[offset + 15] = '\0';
             }
             if(strcmp(ins->rm, "010") == 0)
             {
@@ -476,6 +495,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
+                ins->asem[offset + 15] = '\0';
             }
             if(strcmp(ins->rm, "011") == 0)
             {
@@ -491,6 +511,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
+                ins->asem[offset + 15] = '\0';
             }
             if(strcmp(ins->rm, "100") == 0)
             {
@@ -504,6 +525,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
+                ins->asem[offset + 13] = '\0';
             }
             if(strcmp(ins->rm, "101") == 0)
             {
@@ -517,6 +539,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
+                ins->asem[offset + 13] = '\0';
             }
             if(strcmp(ins->rm, "110") == 0)
             {
@@ -530,6 +553,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
+                ins->asem[offset + 13] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
@@ -543,6 +567,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
+                ins->asem[offset + 13] = '\0';
             }
         }
         else if(strcmp(ins->mod, "11") == 0)
@@ -554,6 +579,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             ins->asem[offset + 5] = reg[0];
             ins->asem[offset + 6] = reg[1];
             ins->asem[offset + 7] = ']';
+            ins->asem[offset + 8] = '\0';
         }
     }
     /*from reg (reg behind)*/
@@ -582,6 +608,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = ' ';
                 ins->asem[offset + 9] = reg[0];
                 ins->asem[offset + 10] = reg[1];
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "001") == 0)
             {
@@ -595,6 +622,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = ' ';
                 ins->asem[offset + 9] = reg[0];
                 ins->asem[offset + 10] = reg[1];
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "010") == 0)
             {
@@ -608,6 +636,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = ' ';
                 ins->asem[offset + 9] = reg[0];
                 ins->asem[offset + 10] = reg[1];
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "011") == 0)
             {
@@ -621,6 +650,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 8] = ' ';
                 ins->asem[offset + 9] = reg[0];
                 ins->asem[offset + 10] = reg[1];
+                ins->asem[offset + 11] = '\0';
             }
             if(strcmp(ins->rm, "100") == 0)
             {
@@ -631,6 +661,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = ' ';
                 ins->asem[offset + 6] = reg[0];
                 ins->asem[offset + 7] = reg[1];
+                ins->asem[offset + 8] = '\0';
             }
             if(strcmp(ins->rm, "101") == 0)
             {
@@ -641,6 +672,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = ' ';
                 ins->asem[offset + 6] = reg[0];
                 ins->asem[offset + 7] = reg[1];
+                ins->asem[offset + 8] = '\0';
             }
             if(strcmp(ins->rm, "110") == 0)
             {
@@ -676,6 +708,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 9] = ' ';
                 ins->asem[offset + 10] = reg[0];
                 ins->asem[offset + 11] = reg[1];
+                ins->asem[offset + 12] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
@@ -686,9 +719,374 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = ' ';
                 ins->asem[offset + 6] = reg[0];
                 ins->asem[offset + 7] = reg[1];
+                ins->asem[offset + 8] = '\0';
             }
         }
-        
+        else if(strcmp(ins->mod, "01") == 0)
+        {
+            char front[8], rear[8];
+            /*low disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            for (i = 0; i <= 7; i++)
+            {
+                front[i] = binary[i];
+            }
+            /*high disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            char front[8], rear[8];
+            for (i = 0; i <= 7; i++)
+            {
+                rear[i] = binary[i];
+            }
+            /*minus*/
+            if(strcmp(rear, "11111111") == 0)
+            {
+                char* completement;
+                completement = binary2complement(front);
+                hexadecimal = convertBinaryToHexadecimal(completement);
+            }
+            /*plus*/
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(front);    
+            }
+
+            if(strcmp(ins->rm, "000") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'S';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                ins->asem[offset + 9] = ']';
+                ins->asem[offset + 10] = ',';
+                ins->asem[offset + 11] = ' ';
+                ins->asem[offset + 12] = reg[0];
+                ins->asem[offset + 13] = reg[1];
+                ins->asem[offset + 14] = '\0';
+            }
+            if(strcmp(ins->rm, "001") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'D';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                ins->asem[offset + 9] = ']';
+                ins->asem[offset + 10] = ',';
+                ins->asem[offset + 11] = ' ';
+                ins->asem[offset + 12] = reg[0];
+                ins->asem[offset + 13] = reg[1];
+                ins->asem[offset + 14] = '\0';
+            }
+            if(strcmp(ins->rm, "010") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'S';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                ins->asem[offset + 9] = ']';
+                ins->asem[offset + 10] = ',';
+                ins->asem[offset + 11] = ' ';
+                ins->asem[offset + 12] = reg[0];
+                ins->asem[offset + 13] = reg[1];
+                ins->asem[offset + 14] = '\0';
+            }
+            if(strcmp(ins->rm, "011") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'D';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                ins->asem[offset + 9] = ']';
+                ins->asem[offset + 10] = ',';
+                ins->asem[offset + 11] = ' ';
+                ins->asem[offset + 12] = reg[0];
+                ins->asem[offset + 13] = reg[1];
+                ins->asem[offset + 14] = '\0';
+            }
+            if(strcmp(ins->rm, "100") == 0)
+            {
+                ins->asem[offset + 1] = 'S';
+                ins->asem[offset + 2] = 'I';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = ',';
+                ins->asem[offset + 9] = ' ';
+                ins->asem[offset + 10] = reg[0];
+                ins->asem[offset + 11] = reg[1];
+                ins->asem[offset + 12] = '\0';
+            }
+            if(strcmp(ins->rm, "101") == 0)
+            {
+                ins->asem[offset + 1] = 'D';
+                ins->asem[offset + 2] = 'I';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = ',';
+                ins->asem[offset + 9] = ' ';
+                ins->asem[offset + 10] = reg[0];
+                ins->asem[offset + 11] = reg[1];
+                ins->asem[offset + 12] = '\0';
+            }
+            if(strcmp(ins->rm, "110") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = ',';
+                ins->asem[offset + 9] = ' ';
+                ins->asem[offset + 10] = reg[0];
+                ins->asem[offset + 11] = reg[1];
+                ins->asem[offset + 12] = '\0';
+            }
+            if(strcmp(ins->rm, "111") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                ins->asem[offset + 7] = ']';
+                ins->asem[offset + 8] = ',';
+                ins->asem[offset + 9] = ' ';
+                ins->asem[offset + 10] = reg[0];
+                ins->asem[offset + 11] = reg[1];
+                ins->asem[offset + 12] = '\0';
+            }
+        }
+        else if(strcmp(ins->mod, "10") == 0)
+        {
+            char front[8], rear[8];
+            /*low disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            for (i = 0; i <= 7; i++)
+            {
+                front[i] = binary[i];
+            }
+            /*high disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            char front[8], rear[8];
+            for (i = 0; i <= 7; i++)
+            {
+                rear[i] = binary[i];
+            }
+
+            if(strcmp(ins->rm, "000") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'S';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = ']';
+                ins->asem[offset + 12] = ',';
+                ins->asem[offset + 13] = ' ';
+                ins->asem[offset + 14] = reg[0];
+                ins->asem[offset + 15] = reg[1];
+                ins->asem[offset + 16] = '\0';
+            }
+            if(strcmp(ins->rm, "001") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'D';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = ']';
+                ins->asem[offset + 12] = ',';
+                ins->asem[offset + 13] = ' ';
+                ins->asem[offset + 14] = reg[0];
+                ins->asem[offset + 15] = reg[1];
+                ins->asem[offset + 16] = '\0';
+            }
+            if(strcmp(ins->rm, "010") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'S';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = ']';
+                ins->asem[offset + 12] = ',';
+                ins->asem[offset + 13] = ' ';
+                ins->asem[offset + 14] = reg[0];
+                ins->asem[offset + 15] = reg[1];
+                ins->asem[offset + 16] = '\0';
+            }
+            if(strcmp(ins->rm, "011") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                ins->asem[offset + 4] = 'D';
+                ins->asem[offset + 5] = 'I';
+                ins->asem[offset + 6] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = ']';
+                ins->asem[offset + 12] = ',';
+                ins->asem[offset + 13] = ' ';
+                ins->asem[offset + 14] = reg[0];
+                ins->asem[offset + 15] = reg[1];
+                ins->asem[offset + 16] = '\0';
+            }
+            if(strcmp(ins->rm, "100") == 0)
+            {
+                ins->asem[offset + 1] = 'S';
+                ins->asem[offset + 2] = 'I';
+                ins->asem[offset + 3] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                ins->asem[offset + 8] = ']';
+                ins->asem[offset + 9] = ',';
+                ins->asem[offset + 10] = ' ';
+                ins->asem[offset + 11] = reg[0];
+                ins->asem[offset + 12] = reg[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            if(strcmp(ins->rm, "101") == 0)
+            {
+                ins->asem[offset + 1] = 'D';
+                ins->asem[offset + 2] = 'I';
+                ins->asem[offset + 3] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                ins->asem[offset + 8] = ']';
+                ins->asem[offset + 9] = ',';
+                ins->asem[offset + 10] = ' ';
+                ins->asem[offset + 11] = reg[0];
+                ins->asem[offset + 12] = reg[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            if(strcmp(ins->rm, "110") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'P';
+                ins->asem[offset + 3] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                ins->asem[offset + 8] = ']';
+                ins->asem[offset + 9] = ',';
+                ins->asem[offset + 10] = ' ';
+                ins->asem[offset + 11] = reg[0];
+                ins->asem[offset + 12] = reg[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            if(strcmp(ins->rm, "111") == 0)
+            {
+                ins->asem[offset + 1] = 'B';
+                ins->asem[offset + 2] = 'X';
+                ins->asem[offset + 3] = '+';
+                hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 4] = hexadecimal[0];
+                ins->asem[offset + 5] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                ins->asem[offset + 8] = ']';
+                ins->asem[offset + 9] = ',';
+                ins->asem[offset + 10] = ' ';
+                ins->asem[offset + 11] = reg[0];
+                ins->asem[offset + 12] = reg[1];
+                ins->asem[offset + 13] = '\0';
+            }
+        }
+        else if(strcmp(ins->mod, "11") == 0)
+        {
+            if(ins->w == '1')
+            {
+                reg = register_addressing_16bit(ins->rm);
+                ins->asem[offset + 1] = reg[0];
+                ins->asem[offset + 2] = reg[1];
+                ins->asem[offset + 3] = ']';
+                ins->asem[offset + 4] = ',';
+                ins->asem[offset + 5] = ' ';
+                reg = register_addressing_16bit(ins->rm);
+                ins->asem[offset + 6] = reg[0];
+                ins->asem[offset + 7] = reg[1];
+                ins->asem[offset + 8] = '\0';
+            }
+            else
+            {
+                reg = register_addressing_8bit(ins->rm);
+                ins->asem[offset + 1] = reg[0];
+                ins->asem[offset + 2] = reg[1];
+                ins->asem[offset + 3] = ']';
+                ins->asem[offset + 4] = ',';
+                ins->asem[offset + 5] = ' ';
+                reg = register_addressing_8bit(ins->rm);
+                ins->asem[offset + 6] = reg[0];
+                ins->asem[offset + 7] = reg[1];
+                ins->asem[offset + 8] = '\0';
+            }
+        }
     }
 }
 
