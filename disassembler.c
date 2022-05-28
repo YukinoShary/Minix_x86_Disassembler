@@ -53,16 +53,18 @@ typedef struct instructions_list
     int length;
     instruction_node* front;
     instruction_node* rear;
-}   instructions_list;
+} instructions_list;
 
 unsigned char* read_buffer;         
 instructions_list* asem_result;     /*save result*/
 int *buffer_ptr; 
 
+void asem_output(instructions_list* list);
 void decimal2binary(int decimal, char* binary_text);
 void MOD_RM_REG_process(instruction* ins, int offset);
 void read_header(exec* hdr, char* openfile);
 char* convertBinaryToHexadecimal(char* binary);
+void list_add(instruction_node* node);
 char* register_addressing_8bit(char* reg);
 char* register_addressing_16bit(char* reg);
 char* binary2complement(char binary[8]);
@@ -176,6 +178,36 @@ void decimal2binary(int decimal, char* binary_data)
     }
 }
 
+void asem_output(instructions_list* list)
+{
+    int i, position;
+    char* asem;
+    instruction_node* delete_node;
+
+    position = 0;
+    /*printf 1 instruction per loop*/
+    while(list->length != 0)
+    {
+        /*TODO: printf original hexadecimal data*/
+        i = 0;
+        printf("%04d: ", position);
+        /*read a single instruction*/
+        asem = list->front->ins->asem;
+        while(asem[i] != '\0')
+        {
+            printf("%c", asem[i]);
+            i ++;
+        }
+        printf("\n");
+
+        delete_node = list->front;
+        list->front = list->front->next;
+        free(delete_node->ins);
+        free(delete_node);
+        list->length --;
+    }
+}
+
 /*Handle the r/m mod reg and disp*/
 /*It is a really huge function*/
 void MOD_RM_REG_process(instruction* ins, int offset)
@@ -271,6 +303,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
                 decimal2binary(decimal, binary);
+                ins->length += 8;
                 for (i = 0; i <= 7; i++)
                 {
                     front[i] = binary[i];
@@ -279,6 +312,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
                 decimal2binary(decimal, binary);
+                ins->length += 8;
                 char front[8], rear[8];
                 for (i = 0; i <= 7; i++)
                 {
@@ -309,6 +343,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             for (i = 0; i <= 7; i++)
             {
                 front[i] = binary[i];
@@ -317,6 +352,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             char front[8], rear[8];
             for (i = 0; i <= 7; i++)
             {
@@ -435,6 +471,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             for (i = 0; i <= 7; i++)
             {
                 front[i] = binary[i];
@@ -443,6 +480,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             char front[8], rear[8];
             for (i = 0; i <= 7; i++)
             {
@@ -684,6 +722,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
                 decimal2binary(decimal, binary);
+                ins->length += 8;
                 for (i = 0; i <= 7; i++)
                 {
                     front[i] = binary[i];
@@ -692,6 +731,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
                 decimal2binary(decimal, binary);
+                ins->length += 8;
                 char front[8], rear[8];
                 for (i = 0; i <= 7; i++)
                 {
@@ -729,6 +769,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             for (i = 0; i <= 7; i++)
             {
                 front[i] = binary[i];
@@ -737,6 +778,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             char front[8], rear[8];
             for (i = 0; i <= 7; i++)
             {
@@ -887,6 +929,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             for (i = 0; i <= 7; i++)
             {
                 front[i] = binary[i];
@@ -895,6 +938,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             decimal = (int)read_buffer[*buffer_ptr];
             *buffer_ptr ++;
             decimal2binary(decimal, binary);
+            ins->length += 8;
             char front[8], rear[8];
             for (i = 0; i <= 7; i++)
             {
