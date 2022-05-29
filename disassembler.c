@@ -32,6 +32,7 @@ typedef struct instruction
     char reg[3];
     char w;
     char d;
+    char s;
     char mod[2];
     char rm[2];
     char data0[8];
@@ -62,6 +63,7 @@ int *buffer_ptr;
 void asem_output(instructions_list* list);
 void decimal2binary(int decimal, char* binary_text);
 void MOD_RM_REG_process(instruction* ins, int offset);
+void MOD_RM_process(instruction* ins, int offset);
 void read_header(exec* hdr, char* openfile);
 char* convertBinaryToHexadecimal(char* binary);
 void list_add(instruction_node* node);
@@ -69,9 +71,10 @@ char* register_addressing_8bit(char* reg);
 char* register_addressing_16bit(char* reg);
 char* binary2complement(char binary[8]);
 char* text_to_instruction(exec* hdr);
-void mov_I2R_interpreter(instruction *ins, char* binary_data);
-void int_TS_interpreter(instruction *ins, char* binary_data);
-void add_RMR2E_interpreter(instruction *ins, char* binary_data);
+void mov_I2R_interpreter(instruction* ins, char* binary_data);
+void int_TS_interpreter(instruction* ins, char* binary_data);
+void add_RMR2E_interpreter(instruction* ins, char* binary_data);
+void sub_IRM_interpreter(instruction* ins, char* binary_data);
 
 
 int main(int argc, char* argv[])
@@ -84,7 +87,9 @@ int main(int argc, char* argv[])
     hd = malloc(sizeof(exec));
     read_header(hd, argv[1]);
     text_to_instruction(hd);
+    asem_output(asem_result);
     free(read_buffer);
+    free(asem_result);
 }
 
 void read_header(exec* hdr, char* openfile)
@@ -294,10 +299,6 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             /*here is an exception*/
             if(strcmp(ins->rm, "110") == 0)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                ins->asem[offset + 7] = '+';
-
                 char front[8], rear[8];
                 /*low disp*/
                 decimal = (int)read_buffer[*buffer_ptr];
@@ -319,13 +320,13 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                     rear[i] = binary[i];
                 }
                 hexadecimal = convertBinaryToHexadecimal(rear);
-                ins->asem[offset + 8] = hexadecimal[0];
-                ins->asem[offset + 9] = hexadecimal[1];
+                ins->asem[offset + 5] = hexadecimal[0];
+                ins->asem[offset + 6] = hexadecimal[1];
                 hexadecimal = convertBinaryToHexadecimal(front);
-                ins->asem[offset + 10] = hexadecimal[0];
-                ins->asem[offset + 11] = hexadecimal[1];
-                ins->asem[offset + 12] = ']';
-                ins->asem[offset + 13] = '\0';
+                ins->asem[offset + 7] = hexadecimal[0];
+                ins->asem[offset + 8] = hexadecimal[1];
+                ins->asem[offset + 9] = ']';
+                ins->asem[offset + 10] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
@@ -634,7 +635,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         }
         if(strcmp(ins->mod, "00") == 0)
         {
-            if(strcpm(ins->rm, "000") == 0)
+            if(strcmp(ins->rm, "000") == 0)
             {
                 ins->asem[offset + 1] = 'B';
                 ins->asem[offset + 2] = 'X';
@@ -714,9 +715,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             }
             if(strcmp(ins->rm, "110") == 0)
             {
-                ins->asem[offset + 1] = 'B';
-                ins->asem[offset + 2] = 'P';
-                ins->asem[offset + 3] = '+';
+                /*exception*/
                 char front[8], rear[8];
                 /*low disp*/
                 decimal = (int)read_buffer[*buffer_ptr];
@@ -738,17 +737,17 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                     rear[i] = binary[i];
                 }
                 hexadecimal = convertBinaryToHexadecimal(rear);
+                ins->asem[offset + 1] = hexadecimal[0];
+                ins->asem[offset + 2] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(front);
                 ins->asem[offset + 3] = hexadecimal[0];
                 ins->asem[offset + 4] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
-                ins->asem[offset + 5] = hexadecimal[0];
-                ins->asem[offset + 6] = hexadecimal[1];
-                ins->asem[offset + 7] = ']';
-                ins->asem[offset + 8] = ',';
-                ins->asem[offset + 9] = ' ';
-                ins->asem[offset + 10] = reg[0];
-                ins->asem[offset + 11] = reg[1];
-                ins->asem[offset + 12] = '\0';
+                ins->asem[offset + 5] = ']';
+                ins->asem[offset + 6] = ',';
+                ins->asem[offset + 7] = ' ';
+                ins->asem[offset + 8] = reg[0];
+                ins->asem[offset + 9] = reg[1];
+                ins->asem[offset + 10] = '\0';
             }
             if(strcmp(ins->rm, "111") == 0)
             {
@@ -1134,6 +1133,119 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     }
 }
 
+void MOD_RM_process(instruction* ins, int offset)
+{
+    int i, decimal;
+    char *hexadecimal, *reg;
+    char binary[8];
+
+    if(strcmp(ins->mod, "00") == 0)
+    {
+        ins->asem[offset] = '[';
+        if(strcmp(ins->rm, "000") == 0)
+        {
+
+        }
+        else if(strcmp(ins->rm, "001") == 0)
+        {
+            
+        }
+        else if(strcmp(ins->rm, "010") == 0)
+        {
+            
+        }
+        else if(strcmp(ins->rm, "011") == 0)
+        {
+            
+        }
+        else if(strcmp(ins->rm, "100") == 0)
+        {
+            
+        }
+        else if(strcmp(ins->rm, "101") == 0)
+        {
+            
+        }
+        /*exception*/
+        else if(strcmp(ins->rm, "110") == 0)
+        {
+            char front[8], rear[8];
+            /*low disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            ins->length += 8;
+            for (i = 0; i <= 7; i++)
+            {
+                front[i] = binary[i];
+            }
+            /*high disp*/
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary);
+            ins->length += 8;
+            char front[8], rear[8];
+            for (i = 0; i <= 7; i++)
+            {
+                rear[i] = binary[i];
+            }
+
+            /*read data*/
+            if(ins->s == '0' && ins->w == '1')
+            {
+
+            }
+            if(ins->s == '1' && ins->w == '1')
+            {
+                if(strcmp(ins->data1, '11111111') == 0)
+                {
+                    /*minus*/
+                    char* completement, *front, *rear;
+                    completement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(completement);
+
+                    ins->asem[offset + 1] = '0';
+                    ins->asem[offset + 2] = '0';
+                    ins->asem[offset + 3] = hexadecimal[0];
+                    ins->asem[offset + 4] = hexadecimal[1];
+                    ins->asem[offset + 5] = ']';
+                    ins->asem[offset + 6] = ' ';
+
+                    /*disp*/
+                    /*maybe has some mistakes*/
+                    decimal = (int)read_buffer[*buffer_ptr];
+                    *buffer_ptr ++;
+                    decimal2binary(decimal, binary);
+                    ins->length += 8;
+                    hexadecimal = convertBinaryToHexadecimal(rear);
+                    ins->asem[offset + 7] = hexadecimal[0];
+                    ins->asem[offset + 8] = hexadecimal[1];
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "111") == 0)
+        {
+            
+        }
+    }
+    else if(strcmp(ins->mod, "01") == 0)
+    {
+
+    }
+    else if(strcmp(ins->mod, "10") == 0)
+    {
+
+    }
+    else if(strcmp(ins->mod, "11") == 0)
+    {
+
+    }
+}
+
 /*add item to instructions list*/
 void list_add(instruction_node* node)
 {
@@ -1341,13 +1453,19 @@ char* text_to_instruction(exec* hdr)
             if(ins->seg_1[0] == '0' && ins->seg_1[1] == '0')
                 add_RMR2E_interpreter(ins, binary_data);
         }
+        else if(strcmp(ins->seg_0, "1000") == 0)
+        {
+            if(ins->seg_1[0] == '0' && ins->seg_1[1] == '0')
+            {
 
+            }
+        }
     }
     
 }
 
 /*have to solve the little endian problem*/
-void mov_I2R_interpreter(instruction *ins, char* binary_data)
+void mov_I2R_interpreter(instruction* ins, char* binary_data)
 {
     int i, decimal, n, k;
     instruction_node* node;
@@ -1363,7 +1481,7 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
         ins->reg[i - 1] = ins->seg_1[i];
     }
 
-    /*second byte*/
+    /*the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     decimal2binary(decimal, binary_data);
@@ -1375,7 +1493,7 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
     
     if(ins->w == '1')
     {
-        /*third byte*/
+        /*the third byte*/
         decimal = (int)read_buffer[*buffer_ptr];
         *buffer_ptr ++;
         decimal2binary(decimal, binary_data);
@@ -1423,7 +1541,7 @@ void mov_I2R_interpreter(instruction *ins, char* binary_data)
     list_add(node);
 }
 
-void int_TS_interpreter(instruction *ins, char* binary_data)
+void int_TS_interpreter(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char* hexadecimal;
@@ -1452,7 +1570,7 @@ void int_TS_interpreter(instruction *ins, char* binary_data)
     list_add(node);
 }
 
-void add_RMR2E_interpreter(instruction *ins, char* binary_data)
+void add_RMR2E_interpreter(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -1461,7 +1579,7 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data)
     ins->d = ins->seg_1[2];
     ins->w = ins->seg_1[3];
 
-    /*second byte*/
+    /*the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     decimal2binary(decimal, binary_data);
@@ -1472,11 +1590,11 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data)
     }
     for(i = 2; i <= 4; i++)
     {
-        ins->reg[i - 3] = binary_data[i];
+        ins->reg[i - 2] = binary_data[i];
     }
     for(i = 5; i <= 7; i++)
     {
-        ins->rm[i - 6] = binary_data[i];
+        ins->rm[i - 5] = binary_data[i];
     }
     ins->length = 16;
 
@@ -1490,4 +1608,55 @@ void add_RMR2E_interpreter(instruction *ins, char* binary_data)
 
     node->ins = ins;
     list_add(node);
+}
+
+void sub_IRM_interpreter(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->s = ins->seg_1[6];
+    ins->w = ins->seg_1[7];
+
+    /*the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+
+    for(i = 0; i <=1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+
+    /*the third byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+    for(i = 0; i <= 7; i++)
+    {
+        ins->data0[i] = binary_data[i];
+    }
+    ins->length = 24;
+    /*the forth byte*/
+    if(ins->s == '0' && ins->w == '1')
+    {
+        decimal = (int)read_buffer[*buffer_ptr];
+        *buffer_ptr ++;
+        decimal2binary(decimal, binary_data);
+        for(i = 0; i <= 7; i++)
+        {
+            ins->data0[i] = binary_data[i];
+        }
+        ins->length = 32;
+    }
+
+    ins->asem[0] = 'S';
+    ins->asem[1] = 'U';
+    ins->asem[2] = 'B';
+    ins->asem[3] = ' ';
 }
