@@ -75,6 +75,7 @@ void mov_I2R_interpreter(instruction* ins, char* binary_data);
 void int_TS_interpreter(instruction* ins, char* binary_data);
 void add_RMR2E_interpreter(instruction* ins, char* binary_data);
 void sub_IRM_interpreter(instruction* ins, char* binary_data);
+void mov_RMR_instruction(instruction* ins, char* binary_data);
 
 
 int main(int argc, char* argv[])
@@ -1200,7 +1201,7 @@ void MOD_RM_process(instruction* ins, int offset)
                 if(strcmp(ins->data1, '11111111') == 0)
                 {
                     /*minus*/
-                    char* completement, *front, *rear;
+                    char* completement;
                     completement = binary2complement(ins->data0);
                     hexadecimal = convertBinaryToHexadecimal(completement);
 
@@ -1209,15 +1210,16 @@ void MOD_RM_process(instruction* ins, int offset)
                     ins->asem[offset + 3] = hexadecimal[0];
                     ins->asem[offset + 4] = hexadecimal[1];
                     ins->asem[offset + 5] = ']';
-                    ins->asem[offset + 6] = ' ';
+                    ins->asem[offset + 6] = ',';
+                    ins->asem[offset + 7] = ' ';
 
-                    /*disp*/
+                    /*immediate data*/
                     /*maybe has some mistakes*/
                     decimal = (int)read_buffer[*buffer_ptr];
                     *buffer_ptr ++;
                     decimal2binary(decimal, binary);
                     ins->length += 8;
-                    hexadecimal = convertBinaryToHexadecimal(rear);
+                    hexadecimal = convertBinaryToHexadecimal(binary);
                     ins->asem[offset + 7] = hexadecimal[0];
                     ins->asem[offset + 8] = hexadecimal[1];
                 }
@@ -1457,7 +1459,11 @@ char* text_to_instruction(exec* hdr)
         {
             if(ins->seg_1[0] == '0' && ins->seg_1[1] == '0')
             {
-
+                sub_IRM_interpreter(ins, binary_data);
+            }
+            else if(ins->seg_1[0] == '1' && ins->seg_1[1] == '0')
+            {
+                mov_RMR_instruction(ins, binary_data);
             }
         }
     }
@@ -1659,4 +1665,46 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
     ins->asem[1] = 'U';
     ins->asem[2] = 'B';
     ins->asem[3] = ' ';
+    MOD_RM_process(ins, 4);
+
+    node->ins = ins;
+    list_add(node);
+}
+
+void mov_RMR_instruction(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->d = ins->seg_1[2];
+    ins->w = ins->seg_1[3];
+
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+
+    for(i = 0; i <= 1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 2; i <= 4; i++)
+    {
+        ins->reg[i - 2] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+    ins->length = 16;
+
+    ins->asem[0] = 'M';
+    ins->asem[1] = 'O';
+    ins->asem[2] = 'V';
+    ins->asem[3] = ' ';
+
+    MOD_RM_REG_process(ins, 4);
+    node->ins = ins;
+    list_add(node);
 }
