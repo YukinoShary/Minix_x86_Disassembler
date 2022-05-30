@@ -155,11 +155,6 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
     ins->s = ins->seg_1[6];
     ins->w = ins->seg_1[7];
 
-    /*the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
-    *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-
     for(i = 0; i <=1; i++)
     {
         ins->mod[i] = binary_data[i];
@@ -178,6 +173,7 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
         ins->data0[i] = binary_data[i];
     }
     ins->length = 24;
+
     /*the forth byte*/
     if(ins->s == '0' && ins->w == '1')
     {
@@ -201,7 +197,7 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void mov_RMR_instruction(instruction* ins, char* binary_data)
+void mov_RMR_interpreter(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -235,6 +231,109 @@ void mov_RMR_instruction(instruction* ins, char* binary_data)
     ins->asem[3] = ' ';
 
     MOD_RM_REG_process(ins, 4);
+    node->ins = ins;
+    list_add(node);
+}
+
+void xor_RMRE_interpreter(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->d = ins->seg_1[2];
+    ins->d = ins->seg_1[3];
+
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+
+    for(i = 0; i <= 1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 2; i <= 4; i++)
+    {
+        ins->reg[i - 2] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+    ins->length = 16;
+
+    ins->asem[0] = 'X';
+    ins->asem[1] = 'O';
+    ins->asem[2] = 'R';
+    ins->asem[3] = ' ';
+
+    MOD_RM_REG_process(ins, 4);
+    node->ins = ins;
+    list_add(node);
+}
+
+void lea_LEAR_interpreter(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->d = ins->seg_1[2];
+    ins->d = ins->seg_1[3];
+
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+
+    for(i = 0; i <= 1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 2; i <= 4; i++)
+    {
+        ins->reg[i - 2] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+    ins->length = 16;
+
+    ins->asem[0] = 'L';
+    ins->asem[1] = 'E';
+    ins->asem[2] = 'A';
+    ins->asem[3] = ' ';
+
+    MOD_RM_REG_process(ins, 4);
+    node->ins = ins;
+    list_add(node);
+}
+
+void cmp_IRM_interpreter(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+
+    for(i = 0; i <=1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+    ins->length = 16;
+
+    ins->asem[0] = 'C';
+    ins->asem[1] = 'M';
+    ins->asem[2] = 'P';
+    ins->asem[3] = ' ';
+
+    MOD_RM_process(ins, 4);
     node->ins = ins;
     list_add(node);
 }
