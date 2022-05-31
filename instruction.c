@@ -1,7 +1,7 @@
 #include "instruction.h"
 
-/*have to solve the little endian problem*/
-void mov_I2R_interpreter(instruction* ins, char* binary_data)
+/*TODO: deal with disp and data*/
+void mov_I2R_oper(instruction* ins, char* binary_data)
 {
     int i, decimal, n, k;
     instruction_node* node;
@@ -35,7 +35,7 @@ void mov_I2R_interpreter(instruction* ins, char* binary_data)
         decimal2binary(decimal, binary_data);
         for(i = 0; i <= 7; i++)
         {
-            ins->data0[i] = binary_data[i];
+            ins->data1[i] = binary_data[i];
         }
         ins->length = 24;
     }
@@ -77,7 +77,7 @@ void mov_I2R_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void int_TS_interpreter(instruction* ins, char* binary_data)
+void int_TS_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char* hexadecimal;
@@ -106,7 +106,7 @@ void int_TS_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void add_RMR2E_interpreter(instruction* ins, char* binary_data)
+void add_RMR2E_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -146,7 +146,7 @@ void add_RMR2E_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void sub_IRM_interpreter(instruction* ins, char* binary_data)
+void sub_IRM_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -182,7 +182,7 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
         decimal2binary(decimal, binary_data);
         for(i = 0; i <= 7; i++)
         {
-            ins->data0[i] = binary_data[i];
+            ins->data1[i] = binary_data[i];
         }
         ins->length = 32;
     }
@@ -197,7 +197,7 @@ void sub_IRM_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void mov_RMR_interpreter(instruction* ins, char* binary_data)
+void mov_RMR_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -235,7 +235,7 @@ void mov_RMR_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void xor_RMRE_interpreter(instruction* ins, char* binary_data)
+void xor_RMRE_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -273,7 +273,7 @@ void xor_RMRE_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void lea_LEAR_interpreter(instruction* ins, char* binary_data)
+void lea_LEAR_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
@@ -311,13 +311,17 @@ void lea_LEAR_interpreter(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void cmp_IRM_interpreter(instruction* ins, char* binary_data)
+void IRM_2_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-
+    
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
     for(i = 0; i <=1; i++)
     {
         ins->mod[i] = binary_data[i];
@@ -328,12 +332,128 @@ void cmp_IRM_interpreter(instruction* ins, char* binary_data)
     }
     ins->length = 16;
 
-    ins->asem[0] = 'C';
-    ins->asem[1] = 'M';
-    ins->asem[2] = 'P';
-    ins->asem[3] = ' ';
+    if(binary_data[2] == '1' && binary_data[3] == '0' && binary_data[4] == '1')
+    {
+        ins->asem[0] = 'S';
+        ins->asem[1] = 'U';
+        ins->asem[2] = 'B';
+        ins->asem[3] = ' ';
+        /*the third byte*/
+        decimal = (int)read_buffer[*buffer_ptr];
+        *buffer_ptr ++;
+        decimal2binary(decimal, binary_data);
+        for(i = 0; i <= 7; i++)
+        {
+            ins->data0[i] = binary_data[i];
+        }
+        ins->length = 24;
 
-    MOD_RM_process(ins, 4);
+        /*the forth byte*/
+        if(ins->s == '0' && ins->w == '1')
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary_data);
+            for(i = 0; i <= 7; i++)
+            {
+                ins->data1[i] = binary_data[i];
+            }
+            ins->length = 32;
+        }
+        MOD_RM_process(ins, 4);
+    }
+    else if(binary_data[2] == '1' && binary_data[3] == '1' && binary_data[4] == '1')
+    {
+        ins->asem[0] = 'C';
+        ins->asem[1] = 'M';
+        ins->asem[2] = 'P';
+        ins->asem[3] = ' ';
+        MOD_RM_process(ins, 4);
+    }
+
     node->ins = ins;
     list_add(node);
+}
+
+void jnb_JNBAE_interpreter(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+    ins->length = 16;
+    
+    hexadecimal = convertBinaryToHexadecimal(binary_data);
+    ins->asem[0] = 'J';
+    ins->asem[1] = 'N';
+    ins->asem[2] = 'B';
+    ins->asem[3] = ' ';
+    ins->asem[4] = hexadecimal[0];
+    ins->asem[5] = hexadecimal[1];
+
+    node->ins = ins;
+    list_add(node);
+}
+
+void IDRM_4_oper(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal, *binary, *reg;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->w = binary_data[7];
+    
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+    for(i = 0; i <=1; i++)
+    {
+        ins->mod[i] = binary_data[i];
+    }
+    for(i = 5; i <= 7; i++)
+    {
+        ins->rm[i - 5] = binary_data[i];
+    }
+    ins->length = 16;
+
+    if(binary_data[2] == '1' && binary_data[3] == '0' && binary_data[4] == '0')
+    {
+        /*the third byte*/
+        decimal = (int)read_buffer[*buffer_ptr];
+        *buffer_ptr ++;
+        decimal2binary(decimal, binary_data);
+        for(i = 0; i <= 7; i++)
+        {
+            ins->data0[i] = binary_data[i];
+        }
+        ins->length = 24;
+
+        /*the forth byte*/
+        if(ins->s == '0' && ins->w == '1')
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, binary_data);
+            for(i = 0; i <= 7; i++)
+            {
+                ins->data1[i] = binary_data[i];
+            }
+            ins->length = 32;
+        }
+
+        ins->asem[0] = 'T';
+        ins->asem[1] = 'E';
+        ins->asem[2] = 'S';
+        ins->asem[3] = 'T';
+        ins->asem[4] = ' ';
+
+        MOD_RM_process(ins, 5);
+
+    }
 }
