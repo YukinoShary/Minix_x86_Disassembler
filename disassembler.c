@@ -1130,7 +1130,8 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     }
 }
 
-void MOD_RM_process(instruction* ins, int offset)
+/*when flag == 1, read data*/
+void MOD_RM_process(instruction* ins, int offset, int flag)
 {
     int i, decimal;
     char *hexadecimal, *reg;
@@ -1148,7 +1149,7 @@ void MOD_RM_process(instruction* ins, int offset)
             ins->asem[offset + 7] = ',';
             ins->asem[offset + 8] = ' ';
             
-            if(ins->s == '0' && ins->w == '1')
+            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
             {
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
@@ -1167,7 +1168,7 @@ void MOD_RM_process(instruction* ins, int offset)
                 ins->asem[offset + 12] = hexadecimal[1];
                 ins->asem[offset + 13] = '\0';
             }
-            else if(ins->s == '1' && ins->w == '1')
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
             {
                 decimal = (int)read_buffer[*buffer_ptr];
                 *buffer_ptr ++;
@@ -1181,23 +1182,255 @@ void MOD_RM_process(instruction* ins, int offset)
         }
         else if(strcmp(ins->rm, "001") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = ']';
+            ins->asem[offset + 7] = ',';
+            ins->asem[offset + 8] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
         else if(strcmp(ins->rm, "010") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = ']';
+            ins->asem[offset + 7] = ',';
+            ins->asem[offset + 8] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
         else if(strcmp(ins->rm, "011") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = ']';
+            ins->asem[offset + 7] = ',';
+            ins->asem[offset + 8] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
         else if(strcmp(ins->rm, "100") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'S';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = ']';
+            ins->asem[offset + 4] = ',';
+            ins->asem[offset + 5] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 8] = hexadecimal[0];
+                ins->asem[offset + 9] = hexadecimal[1];
+                ins->asem[offset + 10] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
         else if(strcmp(ins->rm, "101") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = ']';
+            ins->asem[offset + 7] = ',';
+            ins->asem[offset + 8] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
+        }
+        else if(strcmp(ins->rm, "100") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'D';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = ']';
+            ins->asem[offset + 4] = ',';
+            ins->asem[offset + 5] = ' ';
+            
+            if(ins->s == '0' && ins->w == '1')
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 8] = hexadecimal[0];
+                ins->asem[offset + 9] = hexadecimal[1];
+                ins->asem[offset + 10] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
         /*exception*/
         else if(strcmp(ins->rm, "110") == 0)
@@ -1224,11 +1457,11 @@ void MOD_RM_process(instruction* ins, int offset)
             ins->asem[offset + 5] = ' ';
 
             /*read data*/
-            if(ins->s == '0' && ins->w == '1')
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
             {
                 
             }
-            if(ins->s == '1' && ins->w == '1')
+            if(ins->s == '1' && ins->w == '1' && flag == 1)
             {
                 if(ins->data0[0] == '1')
                 {
@@ -1267,16 +1500,1341 @@ void MOD_RM_process(instruction* ins, int offset)
         }
         else if(strcmp(ins->rm, "111") == 0)
         {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = ']';
+            ins->asem[offset + 7] = ',';
+            ins->asem[offset + 8] = ' ';
             
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                ins->asem[offset + 13] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
+        }
+        else if(strcmp(ins->rm, "100") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = ']';
+            ins->asem[offset + 4] = ',';
+            ins->asem[offset + 5] = ' ';
+            
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 6] = hexadecimal[0];
+                ins->asem[offset + 7] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 8] = hexadecimal[0];
+                ins->asem[offset + 9] = hexadecimal[1];
+                ins->asem[offset + 10] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                ins->asem[offset + 9] = hexadecimal[0];
+                ins->asem[offset + 10] = hexadecimal[1];
+                ins->asem[offset + 11] = '\0';
+            }
         }
     }
     else if(strcmp(ins->mod, "01") == 0)
     {
+        if(strcmp(ins->rm, "000") == 0)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
 
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            ins->asem[offset + 7] = '0';
+            ins->asem[offset + 8] = '0';
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "001") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            ins->asem[offset + 7] = '0';
+            ins->asem[offset + 8] = '0';
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "010") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            ins->asem[offset + 7] = '0';
+            ins->asem[offset + 8] = '0';
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "011") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            ins->asem[offset + 7] = '0';
+            ins->asem[offset + 8] = '0';
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "100") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'S';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = '0';
+            ins->asem[offset + 5] = '0';
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "101") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'D';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = '0';
+            ins->asem[offset + 5] = '0';
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "110") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = '0';
+            ins->asem[offset + 5] = '0';
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "111") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+
+            /*minus*/
+            if(ins->low_disp[0] == 1)
+            {
+                char* complement;
+                complement = binary2complement(ins->low_disp);
+                hexadecimal = convertBinaryToHexadecimal(complement);
+                ins->length += 8;
+            }
+            else
+            {
+                hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            }
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = '0';
+            ins->asem[offset + 5] = '0';
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
     }
     else if(strcmp(ins->mod, "10") == 0)
     {
+        if(strcmp(ins->rm, "000") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 7] = hexadecimal[0];
+            ins->asem[offset + 8] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
 
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "001") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 7] = hexadecimal[0];
+            ins->asem[offset + 8] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "010") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 7] = hexadecimal[0];
+            ins->asem[offset + 8] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "011") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'D';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 7] = hexadecimal[0];
+            ins->asem[offset + 8] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 9] = hexadecimal[0];
+            ins->asem[offset + 10] = hexadecimal[1];
+            ins->asem[offset + 11] = ']';
+            ins->asem[offset + 12] = ',';
+            ins->asem[offset + 13] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 14] = hexadecimal[0];
+                ins->asem[offset + 15] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 16] = hexadecimal[0];
+                ins->asem[offset + 17] = hexadecimal[1];
+                ins->asem[offset + 18] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '-';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = '0';
+                    ins->asem[offset + 17] = hexadecimal[0];
+                    ins->asem[offset + 18] = hexadecimal[1];
+                    ins->asem[offset + 19] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 14] = '0';
+                    ins->asem[offset + 15] = '0';
+                    ins->asem[offset + 16] = hexadecimal[0];
+                    ins->asem[offset + 17] = hexadecimal[1];
+                    ins->asem[offset + 18] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "100") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'S';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 4] = hexadecimal[0];
+            ins->asem[offset + 5] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '0';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = hexadecimal[0];
+                    ins->asem[offset + 14] = hexadecimal[1];
+                    ins->asem[offset + 15] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "101") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'D';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 4] = hexadecimal[0];
+            ins->asem[offset + 5] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '0';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = hexadecimal[0];
+                    ins->asem[offset + 14] = hexadecimal[1];
+                    ins->asem[offset + 15] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "110") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 4] = hexadecimal[0];
+            ins->asem[offset + 5] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '0';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = hexadecimal[0];
+                    ins->asem[offset + 14] = hexadecimal[1];
+                    ins->asem[offset + 15] = '\0';
+                }
+            }
+        }
+        else if(strcmp(ins->rm, "111") == 1)
+        {
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->low_disp);
+            ins->length += 8;
+            decimal = (int)read_buffer[*buffer_ptr];
+            *buffer_ptr ++;
+            decimal2binary(decimal, ins->high_disp);
+            ins->length += 8;
+            
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+            ins->asem[offset + 4] = hexadecimal[0];
+            ins->asem[offset + 5] = hexadecimal[1];
+            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            ins->asem[offset + 6] = hexadecimal[0];
+            ins->asem[offset + 7] = hexadecimal[1];
+            ins->asem[offset + 8] = ']';
+            ins->asem[offset + 9] = ',';
+            ins->asem[offset + 10] = ' ';
+
+            if(ins->s == '0' && ins->w == '1' && flag == 1)
+            {
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data1);
+                ins->length += 8;
+
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 11] = hexadecimal[0];
+                ins->asem[offset + 12] = hexadecimal[1];
+                hexadecimal = convertBinaryToHexadecimal(ins->data1);
+                ins->asem[offset + 13] = hexadecimal[0];
+                ins->asem[offset + 14] = hexadecimal[1];
+                ins->asem[offset + 15] = '\0';
+            }
+            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            {
+                char* complement;
+                decimal = (int)read_buffer[*buffer_ptr];
+                *buffer_ptr ++;
+                decimal2binary(decimal, ins->data0);
+                ins->length += 8;
+
+                if(ins->data0[0] == '1')
+                {
+                    complement = binary2complement(ins->data0);
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '-';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = '0';
+                    ins->asem[offset + 14] = hexadecimal[0];
+                    ins->asem[offset + 15] = hexadecimal[1];
+                    ins->asem[offset + 16] = '\0';
+                }
+                else
+                {
+                    hexadecimal = convertBinaryToHexadecimal(ins->data0);
+                    ins->asem[offset + 11] = '0';
+                    ins->asem[offset + 12] = '0';
+                    ins->asem[offset + 13] = hexadecimal[0];
+                    ins->asem[offset + 14] = hexadecimal[1];
+                    ins->asem[offset + 15] = '\0';
+                }
+            }
+        }
     }
     else if(strcmp(ins->mod, "11") == 0)
     {
@@ -1288,7 +2846,7 @@ void MOD_RM_process(instruction* ins, int offset)
         ins->asem[offset + 1] = reg[1];
         ins->asem[offset + 2] = ',';
         ins->asem[offset + 3] = ' ';
-        if(ins->s == '0' && ins->w == '1')
+        if(ins->s == '0' && ins->w == '1' && flag == 1)
         {
             /*low*/
             decimal = (int)read_buffer[*buffer_ptr];
@@ -1309,7 +2867,7 @@ void MOD_RM_process(instruction* ins, int offset)
             ins->asem[offset + 7] = hexadecimal[1];
             ins->asem[offset + 8] = '\0';
         }
-        else if(ins->s == '1' && ins->w == '1')
+        else if(ins->s == '1' && ins->w == '1' && flag == 1)
         {
             /*low*/
             char* complement;

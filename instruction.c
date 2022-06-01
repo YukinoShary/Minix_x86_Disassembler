@@ -116,34 +116,6 @@ void add_RMR2E_oper(instruction* ins, char* binary_data)
     list_add(node);
 }
 
-void sub_IRM_oper(instruction* ins, char* binary_data)
-{
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
-    instruction_node* node;
-    node = malloc(sizeof(instruction_node));
-    ins->s = binary_data[6];
-    ins->w = binary_data[7];
-
-    for(i = 0; i <=1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
-
-    ins->asem[0] = 'S';
-    ins->asem[1] = 'U';
-    ins->asem[2] = 'B';
-    ins->asem[3] = ' ';
-    MOD_RM_process(ins, 4);
-
-    node->ins = ins;
-    list_add(node);
-}
-
 void mov_RMR_oper(instruction* ins, char* binary_data)
 {
     int i, decimal;
@@ -285,7 +257,7 @@ void IRM_2_oper(instruction* ins, char* binary_data)
         ins->asem[1] = 'U';
         ins->asem[2] = 'B';
         ins->asem[3] = ' ';
-        MOD_RM_process(ins, 4);
+        MOD_RM_process(ins, 4, 1);
     }
     else if(binary_data[2] == '1' && binary_data[3] == '1' && binary_data[4] == '1')
     {
@@ -293,7 +265,7 @@ void IRM_2_oper(instruction* ins, char* binary_data)
         ins->asem[1] = 'M';
         ins->asem[2] = 'P';
         ins->asem[3] = ' ';
-        MOD_RM_process(ins, 4);
+        MOD_RM_process(ins, 4, 1);
     }
 
     node->ins = ins;
@@ -347,7 +319,7 @@ void IDRM_4_oper(instruction* ins, char* binary_data)
     }
     ins->length = 16;
 
-    if(binary_data[2] == '1' && binary_data[3] == '0' && binary_data[4] == '0')
+    if(binary_data[2] == '0' && binary_data[3] == '0' && binary_data[4] == '0')
     {
         ins->asem[0] = 'T';
         ins->asem[1] = 'E';
@@ -355,7 +327,7 @@ void IDRM_4_oper(instruction* ins, char* binary_data)
         ins->asem[3] = 'T';
         ins->asem[4] = ' ';
 
-        MOD_RM_process(ins, 5);
+        MOD_RM_process(ins, 5, 1);
     }
 
     node->ins = ins;

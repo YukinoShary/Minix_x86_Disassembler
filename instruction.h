@@ -6,7 +6,6 @@
 void mov_I2R_oper(instruction* ins, char* binary_data);
 void int_TS_oper(instruction* ins, char* binary_data);
 void add_RMR2E_oper(instruction* ins, char* binary_data);
-void sub_IRM_oper(instruction* ins, char* binary_data);
 void mov_RMR_oper(instruction* ins, char* binary_data);
 void xor_RMRE_oper(instruction* ins, char* binary_data);
 void lea_LEAR_oper(instruction* ins, char* binary_data);

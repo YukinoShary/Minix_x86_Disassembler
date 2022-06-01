@@ -31,6 +31,7 @@ typedef struct instruction
     char w;
     char d;
     char s;
+    char v;
     char mod[2];
     char rm[2];
     char low_disp[8];
@@ -63,7 +64,7 @@ int *buffer_ptr;
 void asem_output(instructions_list* list);
 void decimal2binary(int decimal, char* binary_text);
 void MOD_RM_REG_process(instruction* ins, int offset);
-void MOD_RM_process(instruction* ins, int offset);
+void MOD_RM_process(instruction* ins, int offset, int flag);
 void read_header(exec* hdr, char* openfile);
 char* convertBinaryToHexadecimal(char* binary);
 void list_add(instruction_node* node);
