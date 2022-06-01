@@ -67,6 +67,8 @@ void MOD_RM_REG_process(instruction* ins, int offset);
 void MOD_RM_process(instruction* ins, int offset, int flag);
 void read_header(exec* hdr, char* openfile);
 char* convertBinaryToHexadecimal(char* binary);
+int read_disp(instruction* ins, int offset, int flag);
+int read_data(instruction* ins, int offset, int flag);
 void list_add(instruction_node* node);
 char* register_addressing_8bit(char* reg);
 char* register_addressing_16bit(char* reg);
