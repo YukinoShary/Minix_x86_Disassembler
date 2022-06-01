@@ -26,8 +26,6 @@ typedef struct exec
 
 typedef struct instruction
 {
-    char seg_0[4];
-    char seg_1[4];
     /*function code*/
     char reg[3];
     char w;
@@ -35,10 +33,12 @@ typedef struct instruction
     char s;
     char mod[2];
     char rm[2];
+    char low_disp[8];
+    char high_disp[8];
     char data0[8];
     char data1[8];
     char type[8];
-    char asem[32];
+    char asem[64];
     int length;
 } instruction;
 
