@@ -3,11 +3,11 @@
 /*TODO: deal with disp and data*/
 void mov_I2R_oper(instruction* ins, char* binary_data)
 {
-    int i, decimal, n, k;
+    int i, decimal;
     instruction_node* node;
     char* reg, *hexadecimal;
     node = malloc(sizeof(instruction_node));
-    ins->w = binary_data[4];
+    ins->w = binary_data[4] - '0';
     for(i = 0; i <= 2; i++)
     {
         ins->reg[i] = binary_data[i + 5];
@@ -82,8 +82,8 @@ void add_RMR2E_oper(instruction* ins, char* binary_data)
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6];
-    ins->w = binary_data[7];
+    ins->d = binary_data[6] - '0';
+    ins->w = binary_data[7] - '0';
 
     /*the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
@@ -122,8 +122,8 @@ void mov_RMR_oper(instruction* ins, char* binary_data)
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6];
-    ins->w = binary_data[7];
+    ins->d = binary_data[6] - '0';
+    ins->w = binary_data[7] - '0';
 
     /*read the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
@@ -160,8 +160,8 @@ void xor_RMRE_oper(instruction* ins, char* binary_data)
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6];
-    ins->d = binary_data[7];
+    ins->d = binary_data[6] - '0';
+    ins->w = binary_data[7] - '0';
 
     /*read the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
@@ -198,8 +198,8 @@ void lea_LEAR_oper(instruction* ins, char* binary_data)
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6];
-    ins->w = binary_data[7];
+    ins->d = binary_data[6] - '0';
+    ins->w = binary_data[7] - '0';
 
     /*read the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];
@@ -303,7 +303,7 @@ void IDRM_4_oper(instruction* ins, char* binary_data)
     char *hexadecimal, *binary, *reg;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->w = binary_data[7];
+    ins->w = binary_data[7] - '0';
     
     /*read the second byte*/
     decimal = (int)read_buffer[*buffer_ptr];

@@ -37,57 +37,57 @@ void read_header(exec* hdr, char* openfile)
     fseek(fp, 0L, SEEK_END);
     file_size = (size_t)ftell(fp);
     rewind(fp);
-    read(read_buffer, 1, file_size, fp);
+    read(fp, read_buffer, file_size);
     *buffer_ptr = 8;
 
     /*deal with big endian*/
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_text = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
-        (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
+    hdr->a_text = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_data = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
-        (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
+    hdr->a_data = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_bss = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
-        (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
+    hdr->a_bss = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_entry = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
-        (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
+    hdr->a_entry = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_total = (long)(binary2long[3] * 256 * 256 * 256) +
-        (binary2long[2] * 256 * 256) + (binary2long[1] * 256) + binary2long[0];
+    hdr->a_total = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
         *buffer_ptr ++;
     }
-    hdr->a_syms = (long)(binary2long[3] * 16 * 16 * 16 * 16 * 16 *16) +
-        (binary2long[2] * 16 * 16 * 16 * 16) + (binary2long[1] * 16 * 16) + binary2long[0];
+    hdr->a_syms = (long)(binary2long[2] * 256 * 256 * 256) +
+        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
     
     *buffer_ptr = (int)hdr->a_hdrlen;
     printf("a_hdrlen:%hhu\n", hdr->a_hdrlen);
@@ -98,14 +98,15 @@ void read_header(exec* hdr, char* openfile)
 /*byte to binary*/
 void decimal2binary(int decimal, char* binary_data)
 {
-    int and_cul;
-    and_cul = 255;
+    int and_cal;
+    and_cal = 256;
     for(int i = 0; i <= 7; i++)
     {
-        if(and_cul & decimal == and_cul)
+        if(and_cal & decimal == decimal)
             binary_data[i] = 1;
         else
             binary_data[i] = 0;
+        and_cal = and_cal / 2;
     }
 }
 
@@ -147,9 +148,9 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     char *hexadecimal, *reg;
     char binary[8];
     /*to reg*/
-    if(ins->d = '1')
+    if(ins->d = 1)
     {
-        if(ins->w = '0')
+        if(ins->w == 0)
         {
             reg = register_addressing_8bit(ins->reg);
         }
@@ -573,7 +574,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         }
         else if(strcmp(ins->mod, "11") == 0)
         {
-            if(ins->w == '1')
+            if(ins->w == 1)
                 reg = register_addressing_16bit(ins->rm);
             else
                 reg = register_addressing_8bit(ins->rm);
@@ -587,7 +588,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     else
     {
         ins->asem[offset] = '[';
-        if(ins->w = '0')
+        if(ins->w = 0)
         {
             reg = register_addressing_8bit(ins->reg);
         }
@@ -938,7 +939,6 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             {
                 rear[i] = binary[i];
             }
-
             if(strcmp(ins->rm, "000") == 0)
             {
                 ins->asem[offset + 1] = 'B';
@@ -1100,7 +1100,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         }
         else if(strcmp(ins->mod, "11") == 0)
         {
-            if(ins->w == '1')
+            if(ins->w == 1)
             {
                 reg = register_addressing_16bit(ins->rm);
                 ins->asem[offset + 1] = reg[0];
@@ -1150,13 +1150,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 8] = ' ';
             offset += 9;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1176,13 +1176,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 8] = ' ';
             offset += 9;
             
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1202,13 +1202,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 8] = ' ';
             offset += 9;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1228,13 +1228,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 8] = ' ';
             offset += 9;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1251,13 +1251,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 5] = ' ';
             offset += 6;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 0 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1274,13 +1274,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 5] = ' ';
             offset += 6;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1295,13 +1295,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             offset ++;
 
             /*read data*/
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1318,13 +1318,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 5] = ' ';
             offset += 6;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
-                offset += 2;
+                offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1332,13 +1332,233 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             }
         }  
     }
-    else if(strcmp(ins->mod, "01"))
+    else if(strcmp(ins->mod, "01") == 0)
     {
         /*TODO*/
+        if(strcmp(ins->rm, "000") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            offset += 7;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 1 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "001") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            offset += 7;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "010") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            offset += 7;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "011") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            ins->asem[offset + 4] = 'S';
+            ins->asem[offset + 5] = 'I';
+            ins->asem[offset + 6] = '+';
+            offset += 7;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "100") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'S';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            offset += 4;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "101") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'D';
+            ins->asem[offset + 2] = 'I';
+            ins->asem[offset + 3] = '+';
+            offset += 4;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "110") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'P';
+            ins->asem[offset + 3] = '+';
+            offset += 4;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
+        if(strcmp(ins->rm, "111") == 0)
+        {
+            ins->asem[offset] = '[';
+            ins->asem[offset + 1] = 'B';
+            ins->asem[offset + 2] = 'X';
+            ins->asem[offset + 3] = '+';
+            offset += 4;
+            offset = read_disp(ins, offset, 0);
+            ins->asem[offset] = ']';
+            ins->asem[offset + 1] = ',';
+            ins->asem[offset + 2] = ' ';
+            offset += 3;
+
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            {
+                offset = read_data(ins, offset, 1);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
+            {
+                offset = read_data(ins, offset, 0);
+                ins->asem[offset] = '\0';
+                offset ++;
+            }
+        }
     }
     else if(strcmp(ins->mod, "10") == 0)
     {
-        if(strcmp(ins->rm, "000") == 1)
+        if(strcmp(ins->rm, "000") == 0)
         {   
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'B';
@@ -1356,20 +1576,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "001") == 1)
+        else if(strcmp(ins->rm, "001") == 0)
         {         
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'B';
@@ -1387,20 +1607,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "010") == 1)
+        else if(strcmp(ins->rm, "010") == 0)
         {
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'B';
@@ -1418,20 +1638,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "011") == 1)
+        else if(strcmp(ins->rm, "011") == 0)
         {
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'B';
@@ -1449,20 +1669,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "100") == 1)
+        else if(strcmp(ins->rm, "100") == 0)
         {
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'S';
@@ -1477,20 +1697,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
 
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "101") == 1)
+        else if(strcmp(ins->rm, "101") == 0)
         {
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'D';
@@ -1505,20 +1725,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
             
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "110") == 1)
+        else if(strcmp(ins->rm, "110") == 0)
         {
             ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'S';
@@ -1533,20 +1753,20 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
             
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
         }
-        else if(strcmp(ins->rm, "111") == 1)
+        else if(strcmp(ins->rm, "111") == 0)
         {
            ins->asem[offset] = '[';
             ins->asem[offset + 1] = 'S';
@@ -1561,13 +1781,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             ins->asem[offset + 2] = ' ';
             offset += 3;
             
-            if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
                 offset ++;
             }
-            else if(ins->s == '1' && ins->w == '1' && flag == 1)
+            else if(ins->s == 1 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 0);
                 ins->asem[offset] = '\0';
@@ -1587,13 +1807,13 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
         ins->asem[offset + 3] = ' ';
         offset += 4;
         
-        if(ins->s == '0' && ins->w == '1' &&  flag == 1)
+        if(ins->s == 0 && ins->w == 1 &&  flag == 1)
         {
             offset = read_data(ins, offset, 1);
             ins->asem[offset] = '\0';
             offset ++;
         }
-        else if(ins->s == '1' && ins->w == '1' && flag == 1)
+        else if(ins->s == 1 && ins->w == 1 && flag == 1)
         {
             offset = read_data(ins, offset, 0);
             ins->asem[offset] = '\0';

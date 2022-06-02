@@ -28,10 +28,10 @@ typedef struct instruction
 {
     /*function code*/
     char reg[3];
-    char w;
-    char d;
-    char s;
-    char v;
+    int w;
+    int d;
+    int s;
+    int v;
     char mod[2];
     char rm[2];
     char low_disp[8];
