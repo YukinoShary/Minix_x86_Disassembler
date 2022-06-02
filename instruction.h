@@ -12,3 +12,7 @@ void lea_LEAR_oper(instruction* ins, char* binary_data);
 void cmp_IRM_oper(instruction* ins, char* binary_data);
 void IRM_2_oper(instruction* ins, char* binary_data);
 void IDRM_4_oper(instruction* ins, char* binary_data);
+void jne_oper(instruction* ins, char* binary_data);
+void push_R_oper(instruction* ins, char* binary_data);
+void call_DS_oper(instruction* ins, char* binary_data);
+void hlt_oper(instruction* ins, char* binary_data);

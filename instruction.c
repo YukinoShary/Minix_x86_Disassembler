@@ -333,3 +333,86 @@ void IDRM_4_oper(instruction* ins, char* binary_data)
     node->ins = ins;
     list_add(node);
 }
+
+void jne_oper(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+
+    /*read the second byte*/
+    decimal = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    decimal2binary(decimal, binary_data);
+    ins->length = 16;
+
+    ins->asem[0] = 'J';
+    ins->asem[1] = 'N';
+    ins->asem[2] = 'E';
+    ins->asem[3] = ' ';
+    for(i = 0; i <= 7; i++)
+    {
+        ins->asem[i + 4] = binary_data[i];
+    }
+    ins->asem[12] = '\0';
+    node->ins = ins;
+    list_add(node);
+}
+
+void push_R_oper(instruction* ins, char* binary_data)
+{
+    int i, decimal;
+    char *hexadecimal;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+
+    for(i = 4; i <= 7; i++)
+    {
+        ins->reg[i - 4] = binary_data[i];
+    }
+    ins->length = 8;
+    hexadecimal = register_addressing_16bit(ins->reg);
+    ins->asem[0] = 'P';
+    ins->asem[1] = 'U';
+    ins->asem[2] = 'S';
+    ins->asem[3] = 'H';
+    ins->asem[4] = ' ';
+    ins->asem[5] = hexadecimal[0];
+    ins->asem[6] = hexadecimal[1];
+    ins->asem[7] = '\0';
+
+    node->ins = ins;
+    list_add(node);
+}
+
+void call_DS_oper(instruction* ins, char* binary_data)
+{
+    int offset;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    offset = 0;
+    ins->asem[0] = 'C';
+    ins->asem[1] = 'A';
+    ins->asem[2] = 'L';
+    ins->asem[3] = 'L';
+    ins->asem[4] = ' ';
+    offset = 5;
+    offset = read_disp(ins, offset, 1);
+    ins->asem[offset] = '\0';
+    
+    node->ins = ins;
+    list_add(node);
+}
+
+void hlt_oper(instruction* ins, char* binary_data)
+{
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    ins->asem[0] = 'H';
+    ins->asem[1] = 'L';
+    ins->asem[2] = 'T';
+    ins->asem[3] = '\0';
+    node->ins = ins;
+    list_add(node);
+}

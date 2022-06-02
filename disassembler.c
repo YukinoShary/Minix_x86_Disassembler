@@ -2149,8 +2149,35 @@ void instruction_table(instruction* ins, char* binary_data, int ins_num)
     case 0x33:
         xor_RMRE_oper(ins, binary_data);
         break;
+        case 0x50:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x51:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x52:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x53:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x54:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x55:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x56:
+        push_R_oper(ins, binary_data);
+        break;
+    case 0x57:
+        push_R_oper(ins, binary_data);
+        break;
     case 0x73:
         jnb_JNBAE_oper(ins, binary_data);
+        break;
+    case 0x75:
+        jne_oper(ins, binary_data);
         break;
     case 0x80:
         IRM_2_oper(ins, binary_data);
@@ -2236,16 +2263,19 @@ void instruction_table(instruction* ins, char* binary_data, int ins_num)
     case 0xbf:
         mov_I2R_oper(ins, binary_data);
         break;
-    case 0xb:
-        mov_I2R_oper(ins, binary_data);
-        break;
     case 0xcd:
         int_TS_oper(ins, binary_data);
         break;
-    case 0xf3:
-        test_IDRM_oper(ins, binary_data);
+    case 0xe8:
+        call_DS_oper(ins, binary_data);
         break;
     case 0xf4:
+        hlt_oper(ins, binary_data);
+        break;
+    case 0xf6:
+        IDRM_4_oper(ins, binary_data);
+        break;
+    case 0xf7:
         IDRM_4_oper(ins, binary_data);
         break; 
     default:
