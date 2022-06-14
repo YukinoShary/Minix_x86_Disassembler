@@ -1,15 +1,280 @@
-#include "disassembler.h"
+#include "function_define.h"
+#define BUFFER_SIZE 32 * 1024
 
-extern char* read_buffer;
-extern instructions_list* asem_result;
+unsigned char* read_buffer;         
+instructions_list* asem_result;     /*save result*/
+int *buffer_ptr; 
+char hexadecimal_table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+/* when the flag == 1, it means interpreter mode*/
+void (*instruction_func[256])(instruction*, char*, int*, int) =
+{
+    /*this is the line 1 */add_RMR2E_oper,
+    /*this is the line 1 */add_RMR2E_oper,
+    /*this is the line 2 */add_RMR2E_oper,
+    /*this is the line 3 */NULL,
+    /*this is the line 4 */NULL,
+    /*this is the line 5 */NULL,
+    /*this is the line 6 */NULL,
+    /*this is the line 7 */NULL,
+    /*this is the line 8 */NULL,
+    /*this is the line 9 */NULL,
+    /*this is the line a */NULL,
+    /*this is the line b */NULL,
+    /*this is the line c */NULL,
+    /*this is the line d */NULL,
+    /*this is the line e */NULL,
+    /*this is the line f */NULL,
+    /*this is the line 10 */NULL,
+    /*this is the line 11 */NULL,
+    /*this is the line 12 */NULL,
+    /*this is the line 13 */NULL,
+    /*this is the line 14 */NULL,
+    /*this is the line 15 */NULL,
+    /*this is the line 16 */NULL,
+    /*this is the line 17 */NULL,
+    /*this is the line 18 */NULL,
+    /*this is the line 19 */NULL,
+    /*this is the line 1a */NULL,
+    /*this is the line 1b */NULL,
+    /*this is the line 1c */NULL,
+    /*this is the line 1d */NULL,
+    /*this is the line 1e */NULL,
+    /*this is the line 1f */NULL,
+    /*this is the line 20 */NULL,
+    /*this is the line 21 */NULL,
+    /*this is the line 22 */NULL,
+    /*this is the line 23 */NULL,
+    /*this is the line 24 */NULL,
+    /*this is the line 25 */NULL,
+    /*this is the line 26 */NULL,
+    /*this is the line 27 */NULL,
+    /*this is the line 28 */NULL,
+    /*this is the line 29 */NULL,
+    /*this is the line 2a */NULL,
+    /*this is the line 2b */NULL,
+    /*this is the line 2c */NULL,
+    /*this is the line 2d */NULL,
+    /*this is the line 2e */NULL,
+    /*this is the line 2f */NULL,
+    /*this is the line 30 */xor_RMRE_oper,
+    /*this is the line 31 */xor_RMRE_oper,
+    /*this is the line 32 */xor_RMRE_oper,
+    /*this is the line 33 */xor_RMRE_oper,
+    /*this is the line 34 */NULL,
+    /*this is the line 35 */NULL,
+    /*this is the line 36 */NULL,
+    /*this is the line 37 */NULL,
+    /*this is the line 38 */NULL,
+    /*this is the line 39 */NULL,
+    /*this is the line 3a */NULL,
+    /*this is the line 3b */NULL,
+    /*this is the line 3c */NULL,
+    /*this is the line 3d */NULL,
+    /*this is the line 3e */NULL,
+    /*this is the line 3f */NULL,
+    /*this is the line 40 */NULL,
+    /*this is the line 41 */NULL,
+    /*this is the line 42 */NULL,
+    /*this is the line 43 */NULL,
+    /*this is the line 44 */NULL,
+    /*this is the line 45 */NULL,
+    /*this is the line 46 */NULL,
+    /*this is the line 47 */NULL,
+    /*this is the line 48 */NULL,
+    /*this is the line 49 */NULL,
+    /*this is the line 4a */NULL,
+    /*this is the line 4b */NULL,
+    /*this is the line 4c */NULL,
+    /*this is the line 4d */NULL,
+    /*this is the line 4e */NULL,
+    /*this is the line 4f */NULL,
+    /*this is the line 50 */push_R_oper,
+    /*this is the line 51 */push_R_oper,
+    /*this is the line 52 */push_R_oper,
+    /*this is the line 53 */push_R_oper,
+    /*this is the line 54 */push_R_oper,
+    /*this is the line 55 */push_R_oper,
+    /*this is the line 56 */push_R_oper,
+    /*this is the line 57 */push_R_oper,
+    /*this is the line 58 */NULL,
+    /*this is the line 59 */NULL,
+    /*this is the line 5a */NULL,
+    /*this is the line 5b */NULL,
+    /*this is the line 5c */NULL,
+    /*this is the line 5d */NULL,
+    /*this is the line 5e */NULL,
+    /*this is the line 5f */NULL,
+    /*this is the line 60 */NULL,
+    /*this is the line 61 */NULL,
+    /*this is the line 62 */NULL,
+    /*this is the line 63 */NULL,
+    /*this is the line 64 */NULL,
+    /*this is the line 65 */NULL,
+    /*this is the line 66 */NULL,
+    /*this is the line 67 */NULL,
+    /*this is the line 68 */NULL,
+    /*this is the line 69 */NULL,
+    /*this is the line 6a */NULL,
+    /*this is the line 6b */NULL,
+    /*this is the line 6c */NULL,
+    /*this is the line 6d */NULL,
+    /*this is the line 6e */NULL,
+    /*this is the line 6f */NULL,
+    /*this is the line 70 */NULL,
+    /*this is the line 71 */NULL,
+    /*this is the line 72 */NULL,
+    /*this is the line 73 */jnb_JNBAE_oper,
+    /*this is the line 74 */NULL,
+    /*this is the line 75 */jne_oper,
+    /*this is the line 76 */NULL,
+    /*this is the line 77 */NULL,
+    /*this is the line 78 */NULL,
+    /*this is the line 79 */NULL,
+    /*this is the line 7a */NULL,
+    /*this is the line 7b */NULL,
+    /*this is the line 7c */NULL,
+    /*this is the line 7d */NULL,
+    /*this is the line 7e */NULL,
+    /*this is the line 7f */NULL,
+    /*this is the line 80 */IRM_2_oper,
+    /*this is the line 81 */IRM_2_oper,
+    /*this is the line 82 */IRM_2_oper,
+    /*this is the line 83 */IRM_2_oper,
+    /*this is the line 84 */NULL,
+    /*this is the line 85 */NULL,
+    /*this is the line 86 */NULL,
+    /*this is the line 87 */NULL,
+    /*this is the line 88 */mov_RMR_oper,
+    /*this is the line 89 */mov_RMR_oper,
+    /*this is the line 8a */mov_RMR_oper,
+    /*this is the line 8b */mov_RMR_oper,
+    /*this is the line 8c */lea_LEAR_oper,
+    /*this is the line 8d */lea_LEAR_oper,
+    /*this is the line 8e */lea_LEAR_oper,
+    /*this is the line 8f */lea_LEAR_oper,
+    /*this is the line 90 */NULL,
+    /*this is the line 91 */NULL,
+    /*this is the line 92 */NULL,
+    /*this is the line 93 */NULL,
+    /*this is the line 94 */NULL,
+    /*this is the line 95 */NULL,
+    /*this is the line 96 */NULL,
+    /*this is the line 97 */NULL,
+    /*this is the line 98 */cbw_oper,
+    /*this is the line 99 */NULL,
+    /*this is the line 9a */NULL,
+    /*this is the line 9b */NULL,
+    /*this is the line 9c */NULL,
+    /*this is the line 9d */NULL,
+    /*this is the line 9e */NULL,
+    /*this is the line 9f */NULL,
+    /*this is the line a0 */NULL,
+    /*this is the line a1 */NULL,
+    /*this is the line a2 */NULL,
+    /*this is the line a3 */NULL,
+    /*this is the line a4 */NULL,
+    /*this is the line a5 */NULL,
+    /*this is the line a6 */NULL,
+    /*this is the line a7 */NULL,
+    /*this is the line a8 */NULL,
+    /*this is the line a9 */NULL,
+    /*this is the line aa */NULL,
+    /*this is the line ab */NULL,
+    /*this is the line ac */NULL,
+    /*this is the line ad */NULL,
+    /*this is the line ae */NULL,
+    /*this is the line af */NULL,
+    /*this is the line b0 */mov_I2R_oper,
+    /*this is the line b1 */mov_I2R_oper,
+    /*this is the line b2 */mov_I2R_oper,
+    /*this is the line b3 */mov_I2R_oper,
+    /*this is the line b4 */mov_I2R_oper,
+    /*this is the line b5 */mov_I2R_oper,
+    /*this is the line b6 */mov_I2R_oper,
+    /*this is the line b7 */mov_I2R_oper,
+    /*this is the line b8 */mov_I2R_oper,
+    /*this is the line b9 */mov_I2R_oper,
+    /*this is the line ba */mov_I2R_oper,
+    /*this is the line bb */mov_I2R_oper,
+    /*this is the line bc */mov_I2R_oper,
+    /*this is the line bd */mov_I2R_oper,
+    /*this is the line be */mov_I2R_oper,
+    /*this is the line bf */mov_I2R_oper,
+    /*this is the line c0 */NULL,
+    /*this is the line c1 */NULL,
+    /*this is the line c2 */NULL,
+    /*this is the line c3 */NULL,
+    /*this is the line c4 */NULL,
+    /*this is the line c5 */NULL,
+    /*this is the line c6 */NULL,
+    /*this is the line c7 */NULL,
+    /*this is the line c8 */NULL,
+    /*this is the line c9 */NULL,
+    /*this is the line ca */NULL,
+    /*this is the line cb */NULL,
+    /*this is the line cc */NULL,
+    /*this is the line cd */int_TS_oper,
+    /*this is the line ce */NULL,
+    /*this is the line cf */NULL,
+    /*this is the line d0 */NULL,
+    /*this is the line d1 */NULL,
+    /*this is the line d2 */NULL,
+    /*this is the line d3 */NULL,
+    /*this is the line d4 */NULL,
+    /*this is the line d5 */NULL,
+    /*this is the line d6 */NULL,
+    /*this is the line d7 */NULL,
+    /*this is the line d8 */NULL,
+    /*this is the line d9 */NULL,
+    /*this is the line da */NULL,
+    /*this is the line db */NULL,
+    /*this is the line dc */NULL,
+    /*this is the line dd */NULL,
+    /*this is the line de */NULL,
+    /*this is the line df */NULL,
+    /*this is the line e0 */NULL,
+    /*this is the line e1 */NULL,
+    /*this is the line e2 */NULL,
+    /*this is the line e3 */NULL,
+    /*this is the line e4 */NULL,
+    /*this is the line e5 */NULL,
+    /*this is the line e6 */NULL,
+    /*this is the line e7 */NULL,
+    /*this is the line e8 */call_DS_oper,
+    /*this is the line e9 */jmp_DS_oper,
+    /*this is the line ea */NULL,
+    /*this is the line eb */NULL,
+    /*this is the line ec */NULL,
+    /*this is the line ed */NULL,
+    /*this is the line ee */NULL,
+    /*this is the line ef */NULL,
+    /*this is the line f0 */NULL,
+    /*this is the line f1 */NULL,
+    /*this is the line f2 */NULL,
+    /*this is the line f3 */NULL,
+    /*this is the line f4 */hlt_oper,
+    /*this is the line f5 */NULL,
+    /*this is the line f6 */IDRM_4_oper,
+    /*this is the line f7 */IDRM_4_oper,
+    /*this is the line f8 */NULL,
+    /*this is the line f9 */NULL,
+    /*this is the line fa */NULL,
+    /*this is the line fb */NULL,
+    /*this is the line fc */NULL,
+    /*this is the line fd */NULL,
+    /*this is the line fe */NULL,
+    /*this is the line ff */NULL
+};
 
 int main(int argc, char* argv[])
 {
     exec* hd;
-    read_buffer = malloc(16 * 1024);
+    read_buffer = malloc(BUFFER_SIZE);
     asem_result = malloc(sizeof(instructions_list));
     asem_result->length = 0;
     asem_result->front = NULL;
+    buffer_ptr = malloc(sizeof(int));
     hd = malloc(sizeof(exec));
     read_header(hd, argv[1]);
     text_to_instruction(hd);
@@ -23,7 +288,7 @@ void read_header(exec* hdr, char* openfile)
     FILE* fp;
     size_t file_size;
     int i;
-    unsigned char binary2long[4] = {0};
+    long binary2long[4];
     fp = fopen(openfile, "rb");
     fread(&hdr->a_magic[0], sizeof(unsigned char), 1, fp);
     fread(&hdr->a_magic[1], sizeof(unsigned char), 1, fp);
@@ -31,83 +296,74 @@ void read_header(exec* hdr, char* openfile)
     fread(&hdr->a_cpu, sizeof(unsigned char), 1, fp);
     fread(&(hdr->a_hdrlen), sizeof(unsigned char), 1, fp);
     fread(&hdr->a_unused, sizeof(unsigned char), 1, fp);
-    fread(&hdr->a_version, sizeof(short), 1, fp);
+    fread(&hdr->a_version, sizeof(short), 2, fp);
 
     /*read a.out and put into buffer*/
     fseek(fp, 0L, SEEK_END);
     file_size = (size_t)ftell(fp);
     rewind(fp);
-    read(fp, read_buffer, file_size);
-    *buffer_ptr = 8;
+    printf("size:%lu\n", file_size);
+    if(file_size < BUFFER_SIZE)
+        fread(read_buffer, 1, file_size, fp);
+    else
+        printf("file size is larger than the buffer size\n");
+
+    /*here is the the posision that a new byte should be written here which means [0]~[7] has been used*/
+    *buffer_ptr = 8; 
 
     /*deal with big endian*/
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_text = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
+    hdr->a_text = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_data = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
+    hdr->a_data = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_bss = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
+    hdr->a_bss = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_entry = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
+    hdr->a_entry = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_total = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
+    hdr->a_total = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
     for(i = 0; i <= 3; i++)
     {
         binary2long[i] = read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
+        (*buffer_ptr) ++;
     }
-    hdr->a_syms = (long)(binary2long[2] * 256 * 256 * 256) +
-        (binary2long[3] * 256 * 256) + (binary2long[0] * 256) + binary2long[1];
-    
-    *buffer_ptr = (int)hdr->a_hdrlen;
-    printf("a_hdrlen:%hhu\n", hdr->a_hdrlen);
+    hdr->a_syms = (binary2long[3] << 24 ) +
+        (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
+
+    /**buffer_ptr = (int)hdr->a_hdrlen;*/
+    printf("a_hrdlen:%hhu\n", hdr->a_hdrlen);
     printf("buffer pointer position:%d\n", *buffer_ptr);
     printf("text length:%ld\n", hdr->a_text);
-}
-
-/*byte to binary*/
-void decimal2binary(int decimal, char* binary_data)
-{
-    int and_cal;
-    and_cal = 256;
-    for(int i = 0; i <= 7; i++)
-    {
-        if(and_cal & decimal == decimal)
-            binary_data[i] = 1;
-        else
-            binary_data[i] = 0;
-        and_cal = and_cal / 2;
-    }
 }
 
 void asem_output(instructions_list* list)
@@ -148,283 +404,143 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     char *hexadecimal, *reg;
     char binary[8];
     /*to reg*/
-    if(ins->d = 1)
+    if(ins->d == 1)
     {
         if(ins->w == 0)
         {
-            reg = register_addressing_8bit(ins->reg);
+            register_addressing_8bit(ins->reg, reg);
         }
         else
         {
-            reg = register_addressing_16bit(ins->reg);
+            register_addressing_16bit(ins->reg, reg);
         }
 
         /*reg*/
-        ins->asem[offset] = reg[0];
-        ins->asem[offset + 1] = reg[1];
-        ins->asem[offset + 2] = ',';
-        ins->asem[offset + 3] = ' ';
-        ins->asem[offset + 4] = '[';
+        strcpy(ins->asem[offset], reg);
+        offset += 2;
+        strcpy(ins->asem[offset], ", ");
+        offset += 2;
         
         /*r/m & disp*/
-        if(strcmp(ins->mod, "00") == 0)
+        if(ins->mod == 0x00)
         {
-            if(strcmp(ins->rm, "000") == 0)
+            if(ins->rm == 0x00)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'S';
-                ins->asem[offset + 9] = 'I';
-                ins->asem[offset + 10] = ']';
-                ins->asem[offset + 11] = '\0';
+                strcpy(ins->asem[offset], "BX+SI");
+                offset += 5;
             }
-            if(strcmp(ins->rm, "001") == 0)
+            else if(ins->rm == 0x01)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'D';
-                ins->asem[offset + 9] = 'I';
-                ins->asem[offset + 10] = ']';
-                ins->asem[offset + 11] = '\0';
+                strcpy(ins->asem[offset], "BX+DI");
+                offset += 5;
             }
-            if(strcmp(ins->rm, "010") == 0)
+            else if(ins->rm == 0x02)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'S';
-                ins->asem[offset + 9] = 'I';
-                ins->asem[offset + 10] = ']';
-                ins->asem[offset + 11] = '\0';
+                strcpy(ins->asem[offset], "BP+SI");
+                offset += 5;
             }
-            if(strcmp(ins->rm, "011") == 0)
+            else if(ins->rm == 0x03)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'D';
-                ins->asem[offset + 9] = 'I';
-                ins->asem[offset + 10] = ']';
-                ins->asem[offset + 11] = '\0';
+                strcpy(ins->asem[offset], "BP+DI");
+                offset += 5;
             }
-            if(strcmp(ins->rm, "100") == 0)
+            else if(ins->rm == 0x04)
             {
-                ins->asem[offset + 5] = 'S';
-                ins->asem[offset + 6] = 'I';
-                ins->asem[offset + 7] = ']';
-                ins->asem[offset + 8] = '\0';
+                strcpy(ins->asem[offset], "SI");
+                offset += 2;
             }
-            if(strcmp(ins->rm, "101") == 0)
+            else if(ins->rm == 0x05)
             {
-                ins->asem[offset + 5] = 'D';
-                ins->asem[offset + 6] = 'I';
-                ins->asem[offset + 7] = ']';
-                ins->asem[offset + 8] = '\0';
+                strcpy(ins->asem[offset], "DI");
+                offset += 2;
             }
             /*here is an exception*/
-            if(strcmp(ins->rm, "110") == 0)
+            else if(ins->rm == 0x06)
             {
-                char front[8], rear[8];
-                /*low disp*/
-                decimal = (int)read_buffer[*buffer_ptr];
-                *buffer_ptr ++;
-                decimal2binary(decimal, binary);
-                ins->length += 8;
-                for (i = 0; i <= 7; i++)
-                {
-                    front[i] = binary[i];
-                }
-                /*high disp*/
-                decimal = (int)read_buffer[*buffer_ptr];
-                *buffer_ptr ++;
-                decimal2binary(decimal, binary);
-                ins->length += 8;
-                char front[8], rear[8];
-                for (i = 0; i <= 7; i++)
-                {
-                    rear[i] = binary[i];
-                }
-                hexadecimal = convertBinaryToHexadecimal(rear);
-                ins->asem[offset + 5] = hexadecimal[0];
-                ins->asem[offset + 6] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
-                ins->asem[offset + 7] = hexadecimal[0];
-                ins->asem[offset + 8] = hexadecimal[1];
-                ins->asem[offset + 9] = ']';
-                ins->asem[offset + 10] = '\0';
-                free(front);
-                free(rear);
+                offset = read_disp(ins, offset, 1);
             }
-            if(strcmp(ins->rm, "111") == 0)
+            else if(ins->rm == 0x07)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                ins->asem[offset + 7] = ']';
-                ins->asem[offset + 8] = '\0';
+                strcpy(ins->asem[offset], "BX");
+                offset += 2;
             }
             
         }
         
-        else if(strcmp(ins->mod, "01") == 0)
+        else if(ins->mod == 0x01)
         {
-            char front[8];
-            /*low disp*/
-            decimal = (int)read_buffer[*buffer_ptr];
-            *buffer_ptr ++;
-            decimal2binary(decimal, binary);
-            ins->length += 8;
-            for (i = 0; i <= 7; i++)
+            if(ins->rm = 0x00)
             {
-                front[i] = binary[i];
+                strcpy(ins->asem[offset], "[BX+SI");
+                offset += 6;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            /*minus*/
-            if(front[0] == '1')
+            else if(ins->rm = 0x01)
             {
-                char* completement;
-                completement = binary2complement(front);
-                hexadecimal = convertBinaryToHexadecimal(completement);
+                strcpy(ins->asem[offset], "[BX+DI");
+                offset += 6;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            /*plus*/
-            else
+            else if(ins->rm = 0x02)
             {
-                hexadecimal = convertBinaryToHexadecimal(front);    
+                strcpy(ins->asem[offset], "[BP+SI");
+                offset += 6;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-
-            if(strcmp(ins->rm, "000") == 0)
+            else if(ins->rm = 0x03)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'S';
-                ins->asem[offset + 9] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 10] = '-';
-                else
-                    ins->asem[offset + 10] = '+';
-                ins->asem[offset + 11] = '0';
-                ins->asem[offset + 12] = '0';
-                ins->asem[offset + 13] = hexadecimal[0];
-                ins->asem[offset + 14] = hexadecimal[1];
-                ins->asem[offset + 15] = ']';
-                ins->asem[offset + 16] = '\0';
+                strcpy(ins->asem[offset], "[BP+DI");
+                offset += 6;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            if(strcmp(ins->rm, "001") == 0)
+            else if(ins->rm = 0x04)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'D';
-                ins->asem[offset + 9] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 10] = '-';
-                else
-                    ins->asem[offset + 10] = '+';
-                ins->asem[offset + 11] = '0';
-                ins->asem[offset + 12] = '0';
-                ins->asem[offset + 13] = hexadecimal[0];
-                ins->asem[offset + 14] = hexadecimal[1];
-                ins->asem[offset + 15] = ']';
-                ins->asem[offset + 16] = '\0';
+                strcpy(ins->asem[offset], "[SI");
+                offset += 3;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            if(strcmp(ins->rm, "010") == 0)
+            else if(ins->rm = 0x05)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'S';
-                ins->asem[offset + 9] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 10] = '-';
-                else
-                    ins->asem[offset + 10] = '+';
-                ins->asem[offset + 11] = '0';
-                ins->asem[offset + 12] = '0';
-                ins->asem[offset + 13] = hexadecimal[0];
-                ins->asem[offset + 14] = hexadecimal[1];
-                ins->asem[offset + 15] = ']';
-                ins->asem[offset + 16] = '\0';
+                strcpy(ins->asem[offset], "[DI");
+                offset += 3;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            if(strcmp(ins->rm, "011") == 0)
+            else if(ins->rm = 0x06)
             {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = 'D';
-                ins->asem[offset + 9] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 10] = '-';
-                else
-                    ins->asem[offset + 10] = '+';
-                ins->asem[offset + 11] = '0';
-                ins->asem[offset + 12] = '0';
-                ins->asem[offset + 13] = hexadecimal[0];
-                ins->asem[offset + 14] = hexadecimal[1];
-                ins->asem[offset + 15] = ']';
-                ins->asem[offset + 16] = '\0';
+                strcpy(ins->asem[offset], "[BP");
+                offset += 3;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            if(strcmp(ins->rm, "100") == 0)
+            else if(ins->rm = 0x07)
             {
-                ins->asem[offset + 5] = 'S';
-                ins->asem[offset + 6] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 7] = '-';
-                else
-                    ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = '0';
-                ins->asem[offset + 9] = '0';
-                ins->asem[offset + 10] = hexadecimal[0];
-                ins->asem[offset + 11] = hexadecimal[1];
-                ins->asem[offset + 12] = ']';
-                ins->asem[offset + 13] = '\0';
+                strcpy(ins->asem[offset], "[BX");
+                offset += 3;
+                offset = read_disp(ins, offset, 0);
+                ins->asem[offset] = ']';
+                ins->asem[offset + 1] = '\0';
+                offset += 2;
             }
-            if(strcmp(ins->rm, "101") == 0)
-            {
-                ins->asem[offset + 5] = 'D';
-                ins->asem[offset + 6] = 'I';
-                if(front[0] == '1')
-                    ins->asem[offset + 7] = '-';
-                else
-                    ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = '0';
-                ins->asem[offset + 9] = '0';
-                ins->asem[offset + 8] = hexadecimal[0];
-                ins->asem[offset + 9] = hexadecimal[1];
-                ins->asem[offset + 10] = ']';
-                ins->asem[offset + 11] = '\0';
-            }
-            if(strcmp(ins->rm, "110") == 0)
-            {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'P';
-                if(front[0] == '1')
-                    ins->asem[offset + 7] = '-';
-                else
-                    ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = '0';
-                ins->asem[offset + 9] = '0';
-                ins->asem[offset + 10] = hexadecimal[0];
-                ins->asem[offset + 11] = hexadecimal[1];
-                ins->asem[offset + 12] = ']';
-                ins->asem[offset + 13] = '\0';
-            }
-            if(strcmp(ins->rm, "111") == 0)
-            {
-                ins->asem[offset + 5] = 'B';
-                ins->asem[offset + 6] = 'X';
-                if(front[0] == '1')
-                    ins->asem[offset + 7] = '-';
-                else
-                    ins->asem[offset + 7] = '+';
-                ins->asem[offset + 8] = '0';
-                ins->asem[offset + 9] = '0';
-                ins->asem[offset + 10] = hexadecimal[0];
-                ins->asem[offset + 11] = hexadecimal[1];
-                ins->asem[offset + 12] = ']';
-                ins->asem[offset + 13] = '\0';
-            }
-            free(front);
         }
         else if(strcmp(ins->mod, "10") == 0)
         {
@@ -456,10 +572,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 7] = '+';
                 ins->asem[offset + 8] = 'S';
                 ins->asem[offset + 9] = 'I';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
@@ -472,10 +588,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 7] = '+';
                 ins->asem[offset + 8] = 'D';
                 ins->asem[offset + 9] = 'I';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
@@ -488,10 +604,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 7] = '+';
                 ins->asem[offset + 8] = 'S';
                 ins->asem[offset + 9] = 'I';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
@@ -504,10 +620,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 7] = '+';
                 ins->asem[offset + 8] = 'D';
                 ins->asem[offset + 9] = 'I';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 12] = hexadecimal[0];
                 ins->asem[offset + 13] = hexadecimal[1];
                 ins->asem[offset + 14] = ']';
@@ -518,10 +634,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = 'S';
                 ins->asem[offset + 6] = 'I';
                 ins->asem[offset + 7] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
@@ -532,10 +648,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = 'D';
                 ins->asem[offset + 6] = 'I';
                 ins->asem[offset + 7] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
@@ -546,10 +662,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = 'B';
                 ins->asem[offset + 6] = 'P';
                 ins->asem[offset + 7] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
@@ -560,10 +676,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 5] = 'B';
                 ins->asem[offset + 6] = 'P';
                 ins->asem[offset + 7] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 8] = hexadecimal[0];
                 ins->asem[offset + 9] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 10] = hexadecimal[0];
                 ins->asem[offset + 11] = hexadecimal[1];
                 ins->asem[offset + 12] = ']';
@@ -699,10 +815,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 {
                     rear[i] = binary[i];
                 }
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 1] = hexadecimal[0];
                 ins->asem[offset + 2] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 3] = hexadecimal[0];
                 ins->asem[offset + 4] = hexadecimal[1];
                 ins->asem[offset + 5] = ']';
@@ -742,13 +858,13 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             if(front[0] == '1')
             {
                 char* completement;
-                completement = binary2complement(front);
-                hexadecimal = convertBinaryToHexadecimal(completement);
+                completement = byte_complement(front);
+                hexadecimal = decimalToHexadecimal(completement);
             }
             /*plus*/
             else
             {
-                hexadecimal = convertBinaryToHexadecimal(front);    
+                hexadecimal = decimalToHexadecimal(front);    
             }
 
             if(strcmp(ins->rm, "000") == 0)
@@ -947,10 +1063,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 4] = 'S';
                 ins->asem[offset + 5] = 'I';
                 ins->asem[offset + 6] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 7] = hexadecimal[0];
                 ins->asem[offset + 8] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 9] = hexadecimal[0];
                 ins->asem[offset + 10] = hexadecimal[1];
                 ins->asem[offset + 11] = ']';
@@ -968,10 +1084,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 4] = 'D';
                 ins->asem[offset + 5] = 'I';
                 ins->asem[offset + 6] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 7] = hexadecimal[0];
                 ins->asem[offset + 8] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 9] = hexadecimal[0];
                 ins->asem[offset + 10] = hexadecimal[1];
                 ins->asem[offset + 11] = ']';
@@ -989,10 +1105,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 4] = 'S';
                 ins->asem[offset + 5] = 'I';
                 ins->asem[offset + 6] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 7] = hexadecimal[0];
                 ins->asem[offset + 8] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 9] = hexadecimal[0];
                 ins->asem[offset + 10] = hexadecimal[1];
                 ins->asem[offset + 11] = ']';
@@ -1010,10 +1126,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 4] = 'D';
                 ins->asem[offset + 5] = 'I';
                 ins->asem[offset + 6] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 7] = hexadecimal[0];
                 ins->asem[offset + 8] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 9] = hexadecimal[0];
                 ins->asem[offset + 10] = hexadecimal[1];
                 ins->asem[offset + 11] = ']';
@@ -1028,10 +1144,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 1] = 'S';
                 ins->asem[offset + 2] = 'I';
                 ins->asem[offset + 3] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 4] = hexadecimal[0];
                 ins->asem[offset + 5] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 6] = hexadecimal[0];
                 ins->asem[offset + 7] = hexadecimal[1];
                 ins->asem[offset + 8] = ']';
@@ -1046,10 +1162,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 1] = 'D';
                 ins->asem[offset + 2] = 'I';
                 ins->asem[offset + 3] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 4] = hexadecimal[0];
                 ins->asem[offset + 5] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 6] = hexadecimal[0];
                 ins->asem[offset + 7] = hexadecimal[1];
                 ins->asem[offset + 8] = ']';
@@ -1064,10 +1180,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 1] = 'B';
                 ins->asem[offset + 2] = 'P';
                 ins->asem[offset + 3] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 4] = hexadecimal[0];
                 ins->asem[offset + 5] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 6] = hexadecimal[0];
                 ins->asem[offset + 7] = hexadecimal[1];
                 ins->asem[offset + 8] = ']';
@@ -1082,10 +1198,10 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 ins->asem[offset + 1] = 'B';
                 ins->asem[offset + 2] = 'X';
                 ins->asem[offset + 3] = '+';
-                hexadecimal = convertBinaryToHexadecimal(rear);
+                hexadecimal = decimalToHexadecimal(rear);
                 ins->asem[offset + 4] = hexadecimal[0];
                 ins->asem[offset + 5] = hexadecimal[1];
-                hexadecimal = convertBinaryToHexadecimal(front);
+                hexadecimal = decimalToHexadecimal(front);
                 ins->asem[offset + 6] = hexadecimal[0];
                 ins->asem[offset + 7] = hexadecimal[1];
                 ins->asem[offset + 8] = ']';
@@ -1826,23 +1942,22 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
 int read_disp(instruction* ins, int offset, int flag)
 {
     char *hexadecimal, *complement;
-    int i, decimal;
+    int i;
+    complement = malloc(8);
     if(flag)
     {
         /*2 byte*/
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->low_disp = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->low_disp);
         ins->length += 8;
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->high_disp = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->high_disp);
         ins->length += 8;
 
-        hexadecimal = convertBinaryToHexadecimal(ins->high_disp);
+        decimalToHexadecimal(ins->high_disp, hexadecimal);
         ins->asem[offset] = hexadecimal[0];
         ins->asem[offset + 1] = hexadecimal[1];
-        hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+        decimalToHexadecimal(ins->low_disp, hexadecimal);
         ins->asem[offset + 2] = hexadecimal[0];
         ins->asem[offset + 3] = hexadecimal[1];
         offset += 4;
@@ -1850,26 +1965,24 @@ int read_disp(instruction* ins, int offset, int flag)
     else
     {
         /*1 byte*/
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->low_disp = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->low_disp);
         ins->length += 8;
 
-        if(ins->low_disp[0])
+        if((ins->low_disp & 0x80) >> 7)
         {
             /*minus*/
-            complement = binary2complement(ins->low_disp);
-            hexadecimal = convertBinaryToHexadecimal(complement);
+            complement = ~ins->low_disp;
             ins->asem[offset] = '-';
             ins->asem[offset + 1] = '0';
             ins->asem[offset + 2] = '0';
-            ins->asem[offset + 3] = hexadecimal[0];
-            ins->asem[offset + 4] = hexadecimal[1];
+            ins->asem[offset + 3] = complement[0];
+            ins->asem[offset + 4] = complement[1];
             offset += 5;
         }
         else
         {
-            hexadecimal = convertBinaryToHexadecimal(ins->low_disp);
+            decimalToHexadecimal(ins->low_disp, hexadecimal);
             ins->asem[offset] = '0';
             ins->asem[offset + 1] = '0';
             ins->asem[offset + 2] = hexadecimal[0];
@@ -1884,24 +1997,20 @@ int read_disp(instruction* ins, int offset, int flag)
 int read_data(instruction* ins, int offset, int flag)
 {
     char *hexadecimal, *complement;
-    int decimal;
     if(flag)
     {
-        
         /*2 byte*/
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->data0 = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->data0);
         ins->length += 8;
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->data1 = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->data1);
         ins->length += 8;
 
-        hexadecimal = convertBinaryToHexadecimal(ins->data1);
+        decimalToHexadecimal(ins->data1, hexadecimal);
         ins->asem[offset] = hexadecimal[0];
         ins->asem[offset + 1] = hexadecimal[1];
-        hexadecimal = convertBinaryToHexadecimal(ins->data0);
+        decimalToHexadecimal(ins->data0, hexadecimal);
         ins->asem[offset + 2] = hexadecimal[0];
         ins->asem[offset + 3] = hexadecimal[1];
         offset += 4;
@@ -1909,26 +2018,24 @@ int read_data(instruction* ins, int offset, int flag)
     else
     {
         /*1 byte*/
-        decimal = (int)read_buffer[*buffer_ptr];
+        ins->data0 = (int)read_buffer[*buffer_ptr] - '0';
         *buffer_ptr ++;
-        decimal2binary(decimal, ins->data0);
         ins->length += 8;
 
-        if(ins->data0[0])
+        if((ins->data0 & 0x80) >> 7)
         {
             /*minus*/
-            complement = binary2complement(ins->data0);
-            hexadecimal = convertBinaryToHexadecimal(complement);
+            complement = ~ins->data0;
             ins->asem[offset] = '-';
             ins->asem[offset + 1] = '0';
             ins->asem[offset + 2] = '0';
-            ins->asem[offset + 3] = hexadecimal[0];
-            ins->asem[offset + 4] = hexadecimal[1];
+            ins->asem[offset + 3] = complement[0];
+            ins->asem[offset + 4] = complement[1];
             offset += 5;
         }
         else
         {
-            hexadecimal = convertBinaryToHexadecimal(ins->data0);
+            decimalToHexadecimal(ins->data0, hexadecimal);
             ins->asem[offset + 0] = '0';
             ins->asem[offset + 1] = '0';
             ins->asem[offset + 2] = hexadecimal[0];
@@ -1955,156 +2062,90 @@ void list_add(instruction_node* node)
     }
 }
 
-char* register_addressing_8bit(char reg[3])
+void register_addressing_8bit(int data, char* reg)
 {
-    if(strcmp(reg, "000") == 0)
-        return "AL";
-    if(strcmp(reg, "001") == 0)
-        return "CL";
-    if(strcmp(reg, "010") == 0)
-        return "DL";
-    if(strcmp(reg, "011") == 0)
-        return "BL";
-    if(strcmp(reg, "100") == 0)
-        return "AH";
-    if(strcmp(reg, "101") == 0)
-        return "CH";
-    if(strcmp(reg, "110") == 0)
-        return "DH";
-    if(strcmp(reg, "111") == 0)
-        return "BH";
-}
-
-char* register_addressing_16bit(char reg[3])
-{
-    if(strcmp(reg, "000") == 0)
-        return "AX";
-    if(strcmp(reg, "001") == 0)
-        return "CX";
-    if(strcmp(reg, "010") == 0)
-        return "DX";
-    if(strcmp(reg, "011") == 0)
-        return "BX";
-    if(strcmp(reg, "100") == 0)
-        return "SP";
-    if(strcmp(reg, "101") == 0)
-        return "BP";
-    if(strcmp(reg, "110") == 0)
-        return "SI";
-    if(strcmp(reg, "111") == 0)
-        return "DI";
-}
-
-char* convertBinaryToHexadecimal(char* binary)
-{
-    char front[4], rear[4], result[2];
-    int i;
-    for (i = 0; i <= 3; i++)
+    switch(data)
     {
-        front[i] = binary[i];
-    }
-    for(i = 0; i <= 3; i++)
-    {
-        rear[i] = binary[i + 4];
-    }
-
-    if(strcmp(front, "0000") == 0)
-        result[0] = '0';
-    if(strcmp(front, "0001") == 0)
-        result[0] = '1';
-    if(strcmp(front, "0010") == 0)
-        result[0] = '2';
-    if(strcmp(front, "0011") == 0)
-        result[0] = '3';
-    if(strcmp(front, "0100") == 0)
-        result[0] = '4';
-    if(strcmp(front, "0101") == 0)
-        result[0] = '5';
-    if(strcmp(front, "0110") == 0)
-        result[0] = '6';
-    if(strcmp(front, "0111") == 0)
-        result[0] = '7';
-    if(strcmp(front, "1000") == 0)
-        result[0] = '8';
-    if(strcmp(front, "1001") == 0)
-        result[0] = '9';
-    if(strcmp(front, "1010") == 0)
-        result[0] = 'A';
-    if(strcmp(front, "1011") == 0)
-        result[0] = 'B';
-    if(strcmp(front, "1100") == 0)
-        result[0] = 'C';
-    if(strcmp(front, "1101") == 0)
-        result[0] = 'D';
-    if(strcmp(front, "1110") == 0)
-        result[0] = 'E';
-    if(strcmp(front, "1111") == 0)
-        result[0] = 'F';
-    
-    if(strcmp(rear, "0000") == 0)
-        result[1] = '0';
-    if(strcmp(rear, "0001") == 0)
-        result[1] = '1';
-    if(strcmp(rear, "0010") == 0)
-        result[1] = '2';
-    if(strcmp(rear, "0011") == 0)
-        result[1] = '3';
-    if(strcmp(rear, "0100") == 0)
-        result[1] = '4';
-    if(strcmp(rear, "0101") == 0)
-        result[1] = '5';
-    if(strcmp(rear, "0110") == 0)
-        result[1] = '6';
-    if(strcmp(rear, "0111") == 0)
-        result[1] = '7';
-    if(strcmp(rear, "1000") == 0)
-        result[1] = '8';
-    if(strcmp(rear, "1001") == 0)
-        result[1] = '9';
-    if(strcmp(rear, "1010") == 0)
-        result[1] = 'A';
-    if(strcmp(rear, "1011") == 0)
-        result[1] = 'B';
-    if(strcmp(rear, "1100") == 0)
-        result[1] = 'C';
-    if(strcmp(rear, "1101") == 0)
-        result[1] = 'D';
-    if(strcmp(rear, "1110") == 0)
-        result[1] = 'E';
-    if(strcmp(rear, "1111") == 0)
-        result[1] = 'F';
-    return result;
-}
-
-char* binary2complement(char binary[8])
-{
-    char complement[8];
-    int i;
-    for(i = 0; i <= 7; i++)
-    {
-        if(binary[i] == '1')
-            complement[i] = 0;
-        else
-            complement[i] = '1';
-    }
-    for(i = 7; i >= 0; i--)
-    {
-        if(complement[i] == '0')
-        {
-            complement[i] = '1';
+        case 0x00:
+            strcpy(reg, "AL\0");
             break;
-        }
-        else
-            complement[i] = '0';
+        case 0x01:
+            strcpy(reg, "CL\0");
+            break;
+        case 0x02:
+            strcpy(reg, "DL\0");
+            break;
+        case 0x03:
+            strcpy(reg, "BL\0");
+            break;
+        case 0x04:
+            strcpy(reg, "AH\0");
+            break;
+        case 0x05:
+            strcpy(reg, "CH\0");
+            break;
+        case 0x06:
+            strcpy(reg, "DH\0");
+            break;
+        case 0x07:
+            strcpy(reg, "BH\0");
+            break;
     }
-    return complement;
+}
+
+char* register_addressing_16bit(int data, char* reg)
+{
+    switch(data)
+    {
+        case 0x00:
+            strcpy(reg, "AX\0");
+            break;
+        case 0x01:
+            strcpy(reg, "CX\0");
+            break;
+        case 0x02:
+            strcpy(reg, "DX\0");
+            break;
+        case 0x03:
+            strcpy(reg, "BX\0");
+            break;
+        case 0x04:
+            strcpy(reg, "SP\0");
+            break;
+        case 0x05:
+            strcpy(reg, "BP\0");
+            break;
+        case 0x06:
+            strcpy(reg, "SI\0");
+            break;
+        case 0x07:
+            strcpy(reg, "DI\0");
+            break;
+    }
+}
+
+void decimalToHexadecimal(int decimal, char* result)
+{
+    int i, x;
+    x = decimal & 0xf0;
+    result[0] = hexadecimal_table[x];
+    x = decimal & 0x0f;
+    result[1] = hexadecimal_table[x];
+    result[2] = '\0';
+}
+
+void byte_complement(int byte_data, char* result)
+{
+    int complement;
+    complement = ~byte_data;
+    result[0] = (complement & 0xf0) >> 4;
+    result[1] = (complement & 0x0f);
+    result[2] = '\0';
 }
 
 char* text_to_instruction(exec* hdr)
 {
-    char* binary_data;
-    int i, text_end, decimal;
-    binary_data = malloc(8);
+    int i, text_end, byte_data;
     text_end = buffer_ptr + (int)(hdr->a_text);
     /*loop until the end of text*/
     while(text_end - *buffer_ptr > 0)
@@ -2112,173 +2153,9 @@ char* text_to_instruction(exec* hdr)
         /*new memory allocation for every instruction*/
         instruction *ins;
         ins = malloc(sizeof(instruction));
-
         /*read the first byte*/
-        decimal = (int)read_buffer[*buffer_ptr];
-        *buffer_ptr ++;
-        decimal2binary(decimal, binary_data);     
-        instruction_table(ins, binary_data, decimal);
+        byte_data = (int)read_buffer[*buffer_ptr] - '0';
+        instruction_func[byte_data](ins, read_buffer, buffer_ptr, 0);
     }    
 }
 
-void instruction_table(instruction* ins, char* binary_data, int ins_num)
-{
-    switch (ins_num)
-    {
-    case 0x00:
-        add_RMR2E_oper(ins, binary_data);
-        break;
-    case 0x01:
-        add_RMR2E_oper(ins, binary_data);
-        break;
-    case 0x02:
-        add_RMR2E_oper(ins, binary_data);
-        break;
-    case 0x03:
-        add_RMR2E_oper(ins, binary_data);
-        break;
-    case 0x30:
-        xor_RMRE_oper(ins, binary_data);
-        break;
-    case 0x31:
-        xor_RMRE_oper(ins, binary_data);
-        break;
-    case 0x32:
-        xor_RMRE_oper(ins, binary_data);
-        break;
-    case 0x33:
-        xor_RMRE_oper(ins, binary_data);
-        break;
-        case 0x50:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x51:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x52:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x53:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x54:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x55:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x56:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x57:
-        push_R_oper(ins, binary_data);
-        break;
-    case 0x73:
-        jnb_JNBAE_oper(ins, binary_data);
-        break;
-    case 0x75:
-        jne_oper(ins, binary_data);
-        break;
-    case 0x80:
-        IRM_2_oper(ins, binary_data);
-        break;
-    case 0x81:
-        IRM_2_oper(ins, binary_data);
-        break;
-    case 0x82:
-        IRM_2_oper(ins, binary_data);
-        break;
-    case 0x83:
-        IRM_2_oper(ins, binary_data);
-        break;
-    case 0x88:
-        mov_RMR_oper(ins, binary_data);
-        break;
-    case 0x89:
-        mov_RMR_oper(ins, binary_data);
-        break;
-    case 0x8a:
-        mov_RMR_oper(ins, binary_data);
-        break;
-    case 0x8b:
-        mov_RMR_oper(ins, binary_data);
-        break;
-    case 0x8c:
-        lea_LEAR_oper(ins, binary_data);
-        break; 
-    case 0x8d:
-        lea_LEAR_oper(ins, binary_data);
-        break;
-    case 0x8e:
-        lea_LEAR_oper(ins, binary_data);
-        break;
-    case 0x8f:
-        lea_LEAR_oper(ins, binary_data);
-        break;   
-    case 0xb0:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb1:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb2:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb3:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb4:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb5:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb6:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb7:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb8:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xb9:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xba:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xbb:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xbc:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xbd:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xbe:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xbf:
-        mov_I2R_oper(ins, binary_data);
-        break;
-    case 0xcd:
-        int_TS_oper(ins, binary_data);
-        break;
-    case 0xe8:
-        call_DS_oper(ins, binary_data);
-        break;
-    case 0xf4:
-        hlt_oper(ins, binary_data);
-        break;
-    case 0xf6:
-        IDRM_4_oper(ins, binary_data);
-        break;
-    case 0xf7:
-        IDRM_4_oper(ins, binary_data);
-        break; 
-    default:
-        break;
-    }
-}

@@ -27,18 +27,18 @@ typedef struct exec
 typedef struct instruction
 {
     /*function code*/
-    char reg[3];
+    int reg;
     int w;
     int d;
     int s;
     int v;
-    char mod[2];
-    char rm[2];
-    char low_disp[8];
-    char high_disp[8];
-    char data0[8];
-    char data1[8];
-    char type[8];
+    int mod;
+    int rm;
+    int low_disp;
+    int high_disp;
+    int data0;
+    int data1;
+    int type;
     char asem[64];
     int length;
 } instruction;
@@ -56,21 +56,3 @@ typedef struct instructions_list
     instruction_node* front;
     instruction_node* rear;
 } instructions_list;
-
-unsigned char* read_buffer;         
-instructions_list* asem_result;     /*save result*/
-int *buffer_ptr; 
-
-void asem_output(instructions_list* list);
-void decimal2binary(int decimal, char* binary_text);
-void MOD_RM_REG_process(instruction* ins, int offset);
-void MOD_RM_process(instruction* ins, int offset, int flag);
-void read_header(exec* hdr, char* openfile);
-char* convertBinaryToHexadecimal(char* binary);
-int read_disp(instruction* ins, int offset, int flag);
-int read_data(instruction* ins, int offset, int flag);
-void list_add(instruction_node* node);
-char* register_addressing_8bit(char* reg);
-char* register_addressing_16bit(char* reg);
-char* binary2complement(char binary[8]);
-char* text_to_instruction(exec* hdr);
