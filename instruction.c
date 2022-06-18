@@ -1,26 +1,29 @@
-#include "disassembler.h"
+#include "tool_funcs.c"
 
 /*TODO: deal with disp and data*/
 void mov_I2R_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, byte_data;
+    int offset, byte_data;
     char* hexadecimal;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    byte_data = (int)read_buffer[*buffer_ptr] - '0';
+    hexadecimal = malloc(8);
+    byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     ins->length = 8;
     ins->w = (byte_data & 0x08) >> 3;
+    ins->reg = byte_data & 0x07;
     
     /*the second byte*/
-    byte_data = (int)read_buffer[*buffer_ptr];
+    ins->data0 = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     ins->length = 16;
     
     /*set the asem text*/
-    decimalToHexadecimal(byte_data, hexadecimal);
+    decimalToHexadecimal(ins->data0, hexadecimal);
     strcpy(&(ins->asem[0]), "MOV ");
     stpcpy(&(ins->asem[4]), hexadecimal);
+    offset = 6;
     if(ins->w)
     {
         /*the third byte*/
@@ -28,46 +31,70 @@ void mov_I2R_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag
         *buffer_ptr ++;
         ins->length = 24;
         decimalToHexadecimal(byte_data, hexadecimal);
-        strcpy(&(ins->asem[6]), hexadecimal);
-        ins->asem[8] = '\0';
+        strcpy(&(ins->asem[offset]), hexadecimal);
+        ins->asem[offset + 2] = '\0';
+        offset += 3;
     }
     else
-        ins->asem[6] = '\0';
+    {
+        ins->asem[offset] = '\0';
+        offset ++;
+    }  
+    free(hexadecimal);
     
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void int_TS_oper(instruction* ins, char* binary_data)
+void int_TS_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i;
+    int offset;
     char* hexadecimal;
     instruction_node* node;
+    hexadecimal = malloc(8);
     node = malloc(sizeof(instruction_node));
-    ins->type = (int)read_buffer[*buffer_ptr] - '0';
+    *buffer_ptr ++;
+    ins->type = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     ins->length = 16;
 
     /*set the asem*/
     strcpy(&ins->asem[0], "INT ");
     decimalToHexadecimal(ins->type, hexadecimal);
-    strcpy(ins->asem[4], hexadecimal);
+    strcpy(&(ins->asem[4]), hexadecimal);
+    offset = 7;
+    free(hexadecimal);
 
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void add_RMR2E_oper(instruction* ins, char* binary_data)
+void add_RMR2E_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, byte_data;
-    char *hexadecimal, *binary, *reg;
+    int byte_data;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6] - '0';
-    ins->w = binary_data[7] - '0';
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr++;
+    ins->d = byte_data & 0x02 >> 1;
+    ins->w = byte_data & 0x01;
 
     /*the second byte*/
-    byte_data = (int)read_buffer[*buffer_ptr] - '0';
+    byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
     ins->mod = (byte_data & 0xc0) >> 6;
     ins->reg = (byte_data & 0x38) >> 3;
@@ -75,333 +102,353 @@ void add_RMR2E_oper(instruction* ins, char* binary_data)
     ins->length = 16;
 
     /*set the asem*/
-    strcpy(&ins->asem[0], "ADD ");
+    strcpy(&(ins->asem[0]), "ADD ");
     MOD_RM_REG_process(ins, 4);
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void mov_RMR_oper(instruction* ins, char* binary_data)
+void mov_RMR_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
+    int i, byte_data, offset;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6] - '0';
-    ins->w = binary_data[7] - '0';
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr++;
+    ins->d = byte_data & 0x02 >> 1;
+    ins->w = byte_data & 0x01;
 
     /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
+    byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-
-    for(i = 0; i <= 1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 2; i <= 4; i++)
-    {
-        ins->reg[i - 2] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->reg = (byte_data & 0x38) >> 3;
+    ins->rm = byte_data & 0x07;
     ins->length = 16;
 
-    ins->asem[0] = 'M';
-    ins->asem[1] = 'O';
-    ins->asem[2] = 'V';
-    ins->asem[3] = ' ';
+    strcpy(&(ins->asem[0]), "MOV ");
+    offset = 4;
 
-    MOD_RM_REG_process(ins, 4);
+    MOD_RM_REG_process(ins, offset);
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void xor_RMRE_oper(instruction* ins, char* binary_data)
+void xor_RMRE_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
+    int byte_data, offset;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6] - '0';
-    ins->w = binary_data[7] - '0';
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr++;
+    ins->d = byte_data & 0x02 >> 1;
+    ins->w = byte_data & 0x01;
 
     /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
+    byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-
-    for(i = 0; i <= 1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 2; i <= 4; i++)
-    {
-        ins->reg[i - 2] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->reg = (byte_data & 0x38) >> 3;
+    ins->rm = byte_data & 0x07;
     ins->length = 16;
 
-    ins->asem[0] = 'X';
-    ins->asem[1] = 'O';
-    ins->asem[2] = 'R';
-    ins->asem[3] = ' ';
-
+    strcpy(&ins->asem[0], "XOR ");
+    offset = 4;
     MOD_RM_REG_process(ins, 4);
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void lea_LEAR_oper(instruction* ins, char* binary_data)
+void lea_LEAR_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
+    int byte_data, offset;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->d = binary_data[6] - '0';
-    ins->w = binary_data[7] - '0';
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr++;
+    ins->d = byte_data & 0x02 >> 1;
+    ins->w = byte_data & 0x01;
 
     /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-
-    for(i = 0; i <= 1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 2; i <= 4; i++)
-    {
-        ins->reg[i - 2] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->reg = (byte_data & 0x38) >> 3;
+    ins->rm = byte_data & 0x07;
     ins->length = 16;
 
-    ins->asem[0] = 'L';
-    ins->asem[1] = 'E';
-    ins->asem[2] = 'A';
-    ins->asem[3] = ' ';
-
-    MOD_RM_REG_process(ins, 4);
+    strcpy(&(ins->asem[0]), "LEA ");
+    offset = 4;
+    MOD_RM_REG_process(ins, offset);
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+        
+    }
 }
 
-void IRM_2_oper(instruction* ins, char* binary_data)
+void IRM_2_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
+    int offset, byte_data;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
     
     /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-    for(i = 0; i <=1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->rm = byte_data & 0x07;
     ins->length = 16;
 
-    if(binary_data[2] == '1' && binary_data[3] == '0' && binary_data[4] == '1')
+    if((byte_data & 0x1c >> 2) == 0x05)
     {
-        ins->asem[0] = 'S';
-        ins->asem[1] = 'U';
-        ins->asem[2] = 'B';
-        ins->asem[3] = ' ';
-        MOD_RM_process(ins, 4, 1);
+        strcpy(&ins->asem[0], "SUB ");
+        offset = 4;
+        MOD_RM_process(ins, offset, 1);
     }
-    else if(binary_data[2] == '1' && binary_data[3] == '1' && binary_data[4] == '1')
+    else if((byte_data & 0x1c >> 2) == 0x07)
     {
-        ins->asem[0] = 'C';
-        ins->asem[1] = 'M';
-        ins->asem[2] = 'P';
-        ins->asem[3] = ' ';
-        MOD_RM_process(ins, 4, 1);
+        strcpy(&ins->asem[0], "CMP ");
+        offset = 4;
+        MOD_RM_process(ins, offset, 1);
     }
-
     node->ins = ins;
-    list_add(node);
-}
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
 
-void jnb_JNBAE_oper(instruction* ins, char* binary_data)
-{
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
-    instruction_node* node;
-    node = malloc(sizeof(instruction_node));
-
-    /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
-    *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-    ins->length = 16;
+    }
     
-    hexadecimal = decimalToHexadecimal(binary_data);
-    ins->asem[0] = 'J';
-    ins->asem[1] = 'N';
-    ins->asem[2] = 'B';
-    ins->asem[3] = ' ';
-    ins->asem[4] = hexadecimal[0];
-    ins->asem[5] = hexadecimal[1];
-
-    node->ins = ins;
-    list_add(node);
 }
 
-void IDRM_4_oper(instruction* ins, char* binary_data)
+void jnb_JNBAE_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal, *binary, *reg;
-    instruction_node* node;
-    node = malloc(sizeof(instruction_node));
-    ins->w = binary_data[7] - '0';
-    
-    /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
-    *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
-    for(i = 0; i <=1; i++)
-    {
-        ins->mod[i] = binary_data[i];
-    }
-    for(i = 5; i <= 7; i++)
-    {
-        ins->rm[i - 5] = binary_data[i];
-    }
-    ins->length = 16;
-
-    if(binary_data[2] == '0' && binary_data[3] == '0' && binary_data[4] == '0')
-    {
-        ins->asem[0] = 'T';
-        ins->asem[1] = 'E';
-        ins->asem[2] = 'S';
-        ins->asem[3] = 'T';
-        ins->asem[4] = ' ';
-
-        MOD_RM_process(ins, 5, 1);
-    }
-
-    node->ins = ins;
-    list_add(node);
-}
-
-void jne_oper(instruction* ins, char* binary_data)
-{
-    int i, decimal;
+    int offset;
     char *hexadecimal;
     instruction_node* node;
+    hexadecimal = malloc(8);
     node = malloc(sizeof(instruction_node));
 
     /*read the second byte*/
-    decimal = (int)read_buffer[*buffer_ptr];
     *buffer_ptr ++;
-    decimal2binary(decimal, binary_data);
+    ins->low_disp = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
     ins->length = 16;
+    
+    decimalToHexadecimal(ins->low_disp, hexadecimal);
+    strcpy(&ins->asem[0],"JNB ");
+    offset = 4;
+    strcpy(&ins->asem[offset], hexadecimal);
+    offset += 3;
 
-    ins->asem[0] = 'J';
-    ins->asem[1] = 'N';
-    ins->asem[2] = 'E';
-    ins->asem[3] = ' ';
-    for(i = 0; i <= 7; i++)
-    {
-        ins->asem[i + 4] = binary_data[i];
-    }
-    ins->asem[12] = '\0';
+    free(hexadecimal);
     node->ins = ins;
-    list_add(node);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
 
-void push_R_oper(instruction* ins, char* binary_data)
+void IDRM_4_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int i, decimal;
-    char *hexadecimal;
+    int offset, byte_data;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
 
-    for(i = 4; i <= 7; i++)
+    ins->w = byte_data & 0x01;
+    
+    /*read the second byte*/
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->rm = byte_data & 0x07;
+    ins->length = 16;
+
+    if((byte_data & 0x1c >> 2) == 0)
     {
-        ins->reg[i - 4] = binary_data[i];
+        strcpy(&ins->asem[0], "TEST ");
+        offset = 5;
+        MOD_RM_process(ins, offset, 1);
     }
+
+    node->ins = ins;
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
+}
+
+void jne_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
+{
+    int offset, byte_data;
+    char* hexadecimal;
+    instruction_node* node;
+    hexadecimal = malloc(8);
+    node = malloc(sizeof(instruction_node));
+
+    /*read the second byte*/
+    *buffer_ptr ++;
+    ins->low_disp = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    ins->length = 16;
+
+    strcpy(&ins->asem[0], "JNE ");
+    offset = 4;
+    decimalToHexadecimal(ins->low_disp, hexadecimal);
+    offset += 3;
+    node->ins = ins;
+    free(hexadecimal);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
+}
+
+void push_R_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
+{
+    int offset, byte_data;
+    char *hexadecimal;
+    instruction_node* node;
+    hexadecimal = malloc(8);
+    node = malloc(sizeof(instruction_node));
+
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
     ins->length = 8;
-    hexadecimal = register_addressing_16bit(ins->reg);
-    ins->asem[0] = 'P';
-    ins->asem[1] = 'U';
-    ins->asem[2] = 'S';
-    ins->asem[3] = 'H';
-    ins->asem[4] = ' ';
-    ins->asem[5] = hexadecimal[0];
-    ins->asem[6] = hexadecimal[1];
-    ins->asem[7] = '\0';
+    ins->reg = byte_data & 0x07;
+    
+    register_addressing_16bit(ins->reg, hexadecimal);
+    strcpy(&(ins->asem[0]), "PUSH ");
+    offset = 5;
+    strcpy(&(ins->asem[offset]), hexadecimal);
 
-    node->ins = ins;
-    list_add(node);
+    free(hexadecimal);
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
 
-void call_DS_oper(instruction* ins, char* binary_data)
+void call_DS_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
     int offset;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
+    *buffer_ptr ++;
     offset = 0;
-    ins->asem[0] = 'C';
-    ins->asem[1] = 'A';
-    ins->asem[2] = 'L';
-    ins->asem[3] = 'L';
-    ins->asem[4] = ' ';
+    strcpy(&(ins->asem[0]), "CALL ");
     offset = 5;
     offset = read_disp(ins, offset, 1);
     ins->asem[offset] = '\0';
-    
-    node->ins = ins;
-    list_add(node);
+    offset ++;
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
 
-void hlt_oper(instruction* ins)
+void hlt_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
+
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->asem[0] = 'H';
-    ins->asem[1] = 'L';
-    ins->asem[2] = 'T';
-    ins->asem[3] = '\0';
-    node->ins = ins;
-    list_add(node);
+    *buffer_ptr ++;
+    strcpy(&(ins->asem[0]), "HLT\0");
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
 
-void jmp_DS_oper(instruction* ins)
+void jmp_DS_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
-    int offset;
+    int offset, byte_data;
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->asem[0] = 'J';
-    ins->asem[1] = 'M';
-    ins->asem[2] = 'P';
-    ins->asem[3] = ' ';
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr ++;
+    strcpy(&(ins->asem[0]), "JMP ");
     offset = 4;
     offset = read_disp(ins, offset, 1);
     ins->asem[offset] = '\0';
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
 
-void cbw_oper(instruction* ins)
+void cbw_oper(instruction* ins, char* read_buffer, int* buffer_ptr, int flag)
 {
     instruction_node* node;
     node = malloc(sizeof(instruction_node));
-    ins->asem[0] = 'C';
-    ins->asem[1] = 'B';
-    ins->asem[2] = 'W';
-    ins->asem[3] = '\0';
+    *buffer_ptr ++;
+    strcpy(&(ins->asem[0]), "CBW\0");
+    if(flag == 0)
+    {
+        list_add(node);
+    }
+    else if(flag == 1)
+    {
+
+    }
 }
