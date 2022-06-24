@@ -1,6 +1,9 @@
+#ifndef _STRUCTURE_H
+#define _STRUCTURE_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 typedef struct exec
 {
@@ -56,3 +59,5 @@ typedef struct instructions_list
     instruction_node* front;
     instruction_node* rear;
 } instructions_list;
+
+#endif

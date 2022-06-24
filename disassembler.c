@@ -1,6 +1,9 @@
-#include "tool_funcs.c"
-#include "function_define.h"
+#include "instruction_define.h"
+#include "tool_func_define.h"
 #define BUFFER_SIZE 32 * 1024
+
+void text_to_instruction(exec* hdr);
+void read_header(exec* hdr, char* openfile);
 
 /* when the flag == 1, it means interpreter mode*/
 void (*instruction_func[256])(instruction*, char*, int*, int) =
@@ -13,12 +16,12 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 5 */NULL,
     /*this is the line 6 */NULL,
     /*this is the line 7 */NULL,
-    /*this is the line 8 */NULL,
-    /*this is the line 9 */NULL,
-    /*this is the line a */NULL,
-    /*this is the line b */NULL,
-    /*this is the line c */NULL,
-    /*this is the line d */NULL,
+    /*this is the line 8 */or_RMRE_oper,
+    /*this is the line 9 */or_RMRE_oper,
+    /*this is the line a */or_RMRE_oper,
+    /*this is the line b */or_RMRE_oper,
+    /*this is the line c */or_IA_oper,
+    /*this is the line d */or_IA_oper,
     /*this is the line e */NULL,
     /*this is the line f */NULL,
     /*this is the line 10 */NULL,
@@ -77,14 +80,14 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 45 */NULL,
     /*this is the line 46 */NULL,
     /*this is the line 47 */NULL,
-    /*this is the line 48 */NULL,
-    /*this is the line 49 */NULL,
-    /*this is the line 4a */NULL,
-    /*this is the line 4b */NULL,
-    /*this is the line 4c */NULL,
-    /*this is the line 4d */NULL,
-    /*this is the line 4e */NULL,
-    /*this is the line 4f */NULL,
+    /*this is the line 48 */dec_R_oper,
+    /*this is the line 49 */dec_R_oper,
+    /*this is the line 4a */dec_R_oper,
+    /*this is the line 4b */dec_R_oper,
+    /*this is the line 4c */dec_R_oper,
+    /*this is the line 4d */dec_R_oper,
+    /*this is the line 4e */dec_R_oper,
+    /*this is the line 4f */dec_R_oper,
     /*this is the line 50 */push_R_oper,
     /*this is the line 51 */push_R_oper,
     /*this is the line 52 */push_R_oper,
@@ -93,14 +96,14 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 55 */push_R_oper,
     /*this is the line 56 */push_R_oper,
     /*this is the line 57 */push_R_oper,
-    /*this is the line 58 */NULL,
-    /*this is the line 59 */NULL,
-    /*this is the line 5a */NULL,
-    /*this is the line 5b */NULL,
-    /*this is the line 5c */NULL,
-    /*this is the line 5d */NULL,
-    /*this is the line 5e */NULL,
-    /*this is the line 5f */NULL,
+    /*this is the line 58 */pop_R_oper,
+    /*this is the line 59 */pop_R_oper,
+    /*this is the line 5a */pop_R_oper,
+    /*this is the line 5b */pop_R_oper,
+    /*this is the line 5c */pop_R_oper,
+    /*this is the line 5d */pop_R_oper,
+    /*this is the line 5e */pop_R_oper,
+    /*this is the line 5f */pop_R_oper,
     /*this is the line 60 */NULL,
     /*this is the line 61 */NULL,
     /*this is the line 62 */NULL,
@@ -121,7 +124,7 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 71 */NULL,
     /*this is the line 72 */NULL,
     /*this is the line 73 */jnb_JNBAE_oper,
-    /*this is the line 74 */NULL,
+    /*this is the line 74 */je_JEZ_oper,
     /*this is the line 75 */jne_oper,
     /*this is the line 76 */NULL,
     /*this is the line 77 */NULL,
@@ -129,8 +132,8 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 79 */NULL,
     /*this is the line 7a */NULL,
     /*this is the line 7b */NULL,
-    /*this is the line 7c */NULL,
-    /*this is the line 7d */NULL,
+    /*this is the line 7c */jl_JLNGE_oper,
+    /*this is the line 7d */jnl_JNLGE_oper,
     /*this is the line 7e */NULL,
     /*this is the line 7f */NULL,
     /*this is the line 80 */IRM_2_oper,
@@ -199,24 +202,24 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line bf */mov_I2R_oper,
     /*this is the line c0 */NULL,
     /*this is the line c1 */NULL,
-    /*this is the line c2 */NULL,
-    /*this is the line c3 */NULL,
+    /*this is the line c2 */ret_WSAI_oper,
+    /*this is the line c3 */ret_WS_oper,
     /*this is the line c4 */NULL,
     /*this is the line c5 */NULL,
     /*this is the line c6 */NULL,
     /*this is the line c7 */NULL,
     /*this is the line c8 */NULL,
     /*this is the line c9 */NULL,
-    /*this is the line ca */NULL,
-    /*this is the line cb */NULL,
+    /*this is the line ca */ret_IAI_oper,
+    /*this is the line cb */ret_I_oper,
     /*this is the line cc */NULL,
     /*this is the line cd */int_TS_oper,
     /*this is the line ce */NULL,
     /*this is the line cf */NULL,
-    /*this is the line d0 */NULL,
-    /*this is the line d1 */NULL,
-    /*this is the line d2 */NULL,
-    /*this is the line d3 */NULL,
+    /*this is the line d0 */LOGIC_oper,
+    /*this is the line d1 */LOGIC_oper,
+    /*this is the line d2 */LOGIC_oper,
+    /*this is the line d3 */LOGIC_oper,
     /*this is the line d4 */NULL,
     /*this is the line d5 */NULL,
     /*this is the line d6 */NULL,
@@ -363,10 +366,10 @@ void read_header(exec* hdr, char* openfile)
 }
 
 
-char* text_to_instruction(exec* hdr)
+void text_to_instruction(exec* hdr)
 {
     int i, text_end, byte_data;
-    text_end = buffer_ptr + (int)(hdr->a_text);
+    text_end = *buffer_ptr + (int)(hdr->a_text);
     /*loop until the end of text*/
     while(text_end - *buffer_ptr > 0)
     {
