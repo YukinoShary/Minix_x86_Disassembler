@@ -6,7 +6,7 @@ void text_to_instruction(exec* hdr);
 void read_header(exec* hdr, char* openfile);
 
 /* when the flag == 1, it means interpreter mode*/
-void (*instruction_func[256])(instruction*, char*, int*, int) =
+void (*instruction_func[256])(instruction*, char*, int*, int, int) =
 {
     /*this is the line 1 */add_RMR2E_oper,
     /*this is the line 1 */add_RMR2E_oper,
@@ -32,10 +32,10 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line 15 */NULL,
     /*this is the line 16 */NULL,
     /*this is the line 17 */NULL,
-    /*this is the line 18 */NULL,
-    /*this is the line 19 */NULL,
-    /*this is the line 1a */NULL,
-    /*this is the line 1b */NULL,
+    /*this is the line 18 */sbb_RMRE_oper,
+    /*this is the line 19 */sbb_RMRE_oper,
+    /*this is the line 1a */sbb_RMRE_oper,
+    /*this is the line 1b */sbb_RMRE_oper,
     /*this is the line 1c */NULL,
     /*this is the line 1d */NULL,
     /*this is the line 1e */NULL,
@@ -236,16 +236,16 @@ void (*instruction_func[256])(instruction*, char*, int*, int) =
     /*this is the line e1 */NULL,
     /*this is the line e2 */NULL,
     /*this is the line e3 */NULL,
-    /*this is the line e4 */NULL,
-    /*this is the line e5 */NULL,
+    /*this is the line e4 */in_FP_oper,
+    /*this is the line e5 */in_FP_oper,
     /*this is the line e6 */NULL,
     /*this is the line e7 */NULL,
     /*this is the line e8 */call_DS_oper,
     /*this is the line e9 */jmp_DS_oper,
     /*this is the line ea */NULL,
     /*this is the line eb */NULL,
-    /*this is the line ec */NULL,
-    /*this is the line ed */NULL,
+    /*this is the line ec */in_VP_oper,
+    /*this is the line ed */in_VP_oper,
     /*this is the line ee */NULL,
     /*this is the line ef */NULL,
     /*this is the line f0 */NULL,
@@ -378,7 +378,7 @@ void text_to_instruction(exec* hdr)
         ins = malloc(sizeof(instruction));
         /*read the first byte*/
         byte_data = (int)read_buffer[*buffer_ptr];
-        instruction_func[byte_data](ins, read_buffer, buffer_ptr, 0);
+        instruction_func[byte_data](ins, read_buffer, buffer_ptr, hdr->a_data, 0);
     }    
 }
 

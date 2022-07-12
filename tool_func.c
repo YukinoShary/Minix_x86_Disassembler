@@ -1,8 +1,8 @@
 #include "tool_func_define.h"
 
-char hexadecimal_table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-char* register_16bit_table[8] = {"AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"};
-char* register_8bit_table[8] = {"AL", "CL", "DL", "BL", "AH", "CH", "DH", "BH"};
+const char hexadecimal_table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+const char *register_16bit_table[8] = {"AX\0", "CX\0", "DX\0", "BX\0", "SP\0", "BP\0", "SI\0", "DI\0"};
+const char *register_8bit_table[8] = {"AL\0", "CL\0", "DL\0", "BL\0", "AH\0", "CH\0", "DH\0", "BH\0"};
 int register_status[8];
 
 unsigned char* read_buffer;         
@@ -18,11 +18,11 @@ void asem_output(instructions_list* list)
 
     position = 0;
     /*printf 1 instruction per loop*/
-    while(list->length != 0)
+    while(list->length > 0)
     {
         /*TODO: printf original hexadecimal data*/
         i = 0;
-        printf("%04d: ", position);
+        printf("%04x: ", position);
         /*read a single instruction*/
         asem = list->front->ins->asem;
         while(asem[i] != '\0')
@@ -31,13 +31,14 @@ void asem_output(instructions_list* list)
             i ++;
         }
         printf("\n");
+        position += (list->front->ins->length) / 8;
 
         delete_node = list->front;
         list->front = list->front->next;
-        free(delete_node->ins);
         free(delete_node);
-        list->length --;
+        list->length -= 1;
     }
+
 }
 
 /* when flag == 1, read 2 byte*/
@@ -157,26 +158,27 @@ void list_add(instruction_node* node)
     }
     else
     {
+        instruction_node* old;
         asem_result->rear->next = node;
         asem_result->rear = node;
-        asem_result->length ++;
+        asem_result->length += 1;
     }
 }
 
-void register_addressing_8bit(int data, char* reg)
+char* register_addressing_8bit(int data)
 {
-    reg = register_8bit_table[data];
+    return register_8bit_table[data];
 }
 
-void register_addressing_16bit(int data, char* reg)
+char* register_addressing_16bit(int data)
 {
-    reg = register_16bit_table[data];
+    return register_16bit_table[data];
 }
 
 void decimalToHexadecimal(int decimal, char* result)
 {
     int i, x;
-    x = decimal & 0xf0;
+    x = (decimal & 0xf0) >> 4;
     result[0] = hexadecimal_table[x];
     x = decimal & 0x0f;
     result[1] = hexadecimal_table[x];
@@ -187,11 +189,10 @@ void byte_complement(int byte_data, char* result)
 {
     int complement;
     complement = ~byte_data;
-    result[0] = ((complement & 0xf0) >> 4);
-    result[1] = ((complement & 0x0f));
+    result[0] = (complement & 0xf0) >> 4;
+    result[1] = complement & 0x0f;
     result[2] = '\0';
 }
-
 
 /*Handle the r/m mod reg and disp*/
 /*It is a really huge function*/
@@ -199,17 +200,16 @@ void MOD_RM_REG_process(instruction* ins, int offset)
 {
     int i, decimal;
     char *reg;
-    reg = malloc(8);
     /*to reg*/
     if(ins->d == 1)
     {
         if(ins->w == 0)
         {
-            register_addressing_8bit(ins->reg, reg);
+            reg = register_addressing_8bit(ins->reg);
         }
         else
         {
-            register_addressing_16bit(ins->reg, reg);
+            reg = register_addressing_16bit(ins->reg);
         }
 
         /*reg*/
@@ -410,12 +410,12 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         {
             if(ins->w == 1)
             {
-                register_addressing_16bit(ins->reg, reg);
+                reg = register_addressing_16bit(ins->reg);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 strcpy(&ins->asem[offset], ", ");
                 offset += 2;
-                register_addressing_16bit(ins->rm, reg);
+                reg = register_addressing_16bit(ins->rm);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 ins->asem[offset] = '\0';
@@ -424,12 +424,12 @@ void MOD_RM_REG_process(instruction* ins, int offset)
                 
             else
             {
-                register_addressing_8bit(ins->reg, reg);
+                reg = register_addressing_8bit(ins->reg);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 strcpy(&ins->asem[offset], ", ");
                 offset += 2;
-                register_addressing_8bit(ins->rm, reg);
+                reg = register_addressing_8bit(ins->rm);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 ins->asem[offset] = '\0';
@@ -442,11 +442,11 @@ void MOD_RM_REG_process(instruction* ins, int offset)
     {
         if(ins->mod == 0x00)
         {
-            char reg[3];
+            char *reg;
             if(ins->w == 1)
-                register_addressing_16bit(ins->reg, reg);
+                reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
-                register_addressing_8bit(ins->reg, reg);
+                reg = register_addressing_8bit(ins->reg);
             if(ins->rm == 0x00)
             {
                 strcpy(&ins->asem[offset], "[BX+SI], ");
@@ -525,9 +525,9 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         else if(ins->mod == 0x01)
         {
             if(ins->w == 1)
-                register_addressing_16bit(ins->reg, reg);
+                reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
-                register_addressing_8bit(ins->reg, reg);
+                reg = register_addressing_8bit(ins->reg);
             if(ins->rm == 0x00)
             {
                 strcpy(&ins->asem[offset], "[BX+SI");
@@ -628,9 +628,9 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         else if(ins->mod == 0x02)
         {
             if(ins->w == 1)
-                register_addressing_16bit(ins->reg, reg);
+                reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
-                register_addressing_8bit(ins->reg, reg);
+                reg = register_addressing_8bit(ins->reg);
             if(ins->rm == 0x00)
             {
                 strcpy(&ins->asem[offset], "[BX+SI+");
@@ -732,12 +732,12 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         {
             if(ins->w == 1)
             {
-                register_addressing_16bit(ins->rm, reg);
+                reg = register_addressing_16bit(ins->rm);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 strcpy(&ins->asem[offset], ", ");
                 offset += 2;
-                register_addressing_16bit(ins->reg, reg);
+                reg = register_addressing_16bit(ins->reg);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 ins->asem[offset] = '\0';
@@ -745,12 +745,12 @@ void MOD_RM_REG_process(instruction* ins, int offset)
             }              
             else if(ins->w == 0)
             {
-                register_addressing_8bit(ins->rm, reg);
+                reg = register_addressing_8bit(ins->rm);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 strcpy(&ins->asem[offset], ", ");
                 offset += 2;
-                register_addressing_8bit(ins->reg, reg);
+                reg = register_addressing_8bit(ins->reg);
                 strcpy(&ins->asem[offset], reg);
                 offset += 2;
                 ins->asem[offset] = '\0';
@@ -764,7 +764,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
 void MOD_RM_process(instruction* ins, int offset, int flag)
 {
     int i, decimal;
-    char *hexadecimal, *reg;
+    char *reg;
     if(ins->mod == 0x00)
     {
         if(ins->rm == 0x00)
@@ -772,7 +772,7 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             strcpy(&ins->asem[offset], "[BX+SI], ");
             offset += 9;
 
-            if(ins->s == 1 && ins->w == 1 && flag == 1)
+            if(ins->s == 0 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
@@ -1263,9 +1263,9 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
     else if(ins->mod == 0x03)
     {
         if(ins->w == 1)
-            register_addressing_16bit(ins->rm, reg);
+            reg = register_addressing_16bit(ins->rm);
         else
-            register_addressing_8bit(ins->rm, reg);
+            reg = register_addressing_8bit(ins->rm);
         strcpy(&ins->asem[offset], reg);
         offset += 2; 
         strcpy(&ins->asem[offset], ", ");

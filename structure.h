@@ -42,6 +42,7 @@ typedef struct instruction
     int data0;
     int data1;
     int type;
+    int port;
     char asem[64];
     int length;
 } instruction;
@@ -59,5 +60,17 @@ typedef struct instructions_list
     instruction_node* front;
     instruction_node* rear;
 } instructions_list;
+
+typedef struct message
+{
+    int m_source;
+    int m_type;
+    union 
+    {
+        /* data */
+        int m1;
+        int m2;
+    } m_u;
+} message;
 
 #endif
