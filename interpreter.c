@@ -1,12 +1,12 @@
 #include "tool_func_define.h"
 
-int (*libfunc_jump[79])(int fd, char* buffer, int nbytes) = 
+int (*call_vec[79])(message* msgptr) = 
 {
    /*this is the line 1 */NULL,
     /*this is the line 1 */NULL,
     /*this is the line 2 */NULL,
     /*this is the line 3 */NULL,
-    /*this is the line 4 */WRITE,
+    /*this is the line 4 */do_write,
     /*this is the line 5 */NULL,
     /*this is the line 6 */NULL,
     /*this is the line 7 */NULL,
@@ -99,18 +99,29 @@ void mov_I2R_interp(instruction* ins)
 void int_TS_interp(instruction* ins, int type, unsigned char* read_buffer, int* buffer_ptr, int data_start)
 {
     int address, byte_data, i;
-    int data_set[32];
+    int data_set[8];
+    int buffer[8];
+    message* msgptr;
     i = 0;
     if(type == 36)
     {
         address = register_status[0x03];
-        while(1)
+        while(i < 8)
         {
             *buffer_ptr = address + data_start;
+            /*big endian low*/
             byte_data = (int)read_buffer[*buffer_ptr];
             data_set[i] = byte_data;
+            *buffer_ptr += 1;
+            /*big endian high*/
+            byte_data = (int)read_buffer[*buffer_ptr];
+            data_set[i] += byte_data << 8;
+            *buffer_ptr += 1;
             i ++;
         }
-
+        
+        msgptr->m_source = data_set[0];
+        msgptr->m_type = data_set[1];
+        call_vec[msgptr->m_type](msgptr);
     }
 }

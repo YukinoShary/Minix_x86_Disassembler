@@ -55,14 +55,13 @@ int read_disp(instruction* ins, int offset, int flag)
         ins->high_disp = (int)read_buffer[*buffer_ptr];
         *buffer_ptr += 1;
         ins->length += 8;
-
         decimalToHexadecimal(ins->high_disp, hexadecimal);
         ins->asem[offset] = hexadecimal[0];
         ins->asem[offset + 1] = hexadecimal[1];
         decimalToHexadecimal(ins->low_disp, hexadecimal);
         ins->asem[offset + 2] = hexadecimal[0];
         ins->asem[offset + 3] = hexadecimal[1];
-        offset += 4;
+        offset += 5;
     }
     else
     {
@@ -76,20 +75,16 @@ int read_disp(instruction* ins, int offset, int flag)
             /*minus*/
             byte_complement(ins->low_disp, complement);
             ins->asem[offset] = '-';
-            ins->asem[offset + 1] = '0';
-            ins->asem[offset + 2] = '0';
-            ins->asem[offset + 3] = complement[0];
-            ins->asem[offset + 4] = complement[1];
-            offset += 5;
+            ins->asem[offset + 1] = complement[0];
+            ins->asem[offset + 2] = complement[1];
+            offset += 3;
         }
         else
         {
             decimalToHexadecimal(ins->low_disp, hexadecimal);
-            ins->asem[offset] = '0';
-            ins->asem[offset + 1] = '0';
-            ins->asem[offset + 2] = hexadecimal[0];
-            ins->asem[offset + 3] = hexadecimal[1];
-            offset += 4;
+            ins->asem[offset] = hexadecimal[0];
+            ins->asem[offset + 1] = hexadecimal[1];
+            offset += 2;
         }
     }
     return offset;
@@ -129,20 +124,16 @@ int read_data(instruction* ins, int offset, int flag)
             /*minus*/
             byte_complement(ins->data0, complement);
             ins->asem[offset] = '-';
-            ins->asem[offset + 1] = '0';
-            ins->asem[offset + 2] = '0';
-            ins->asem[offset + 3] = complement[0];
-            ins->asem[offset + 4] = complement[1];
-            offset += 5;
+            ins->asem[offset + 1] = complement[0];
+            ins->asem[offset + 2] = complement[1];
+            offset += 3;
         }
         else
         {
             decimalToHexadecimal(ins->data0, hexadecimal);
-            ins->asem[offset + 0] = '0';
-            ins->asem[offset + 1] = '0';
-            ins->asem[offset + 2] = hexadecimal[0];
-            ins->asem[offset + 3] = hexadecimal[1];
-            offset += 4;
+            ins->asem[offset] = hexadecimal[0];
+            ins->asem[offset + 1] = hexadecimal[1];
+            offset += 2;
         }
     }
     return offset;
@@ -188,7 +179,7 @@ void decimalToHexadecimal(int decimal, char* result)
 void byte_complement(int byte_data, char* result)
 {
     int complement;
-    complement = ~byte_data;
+    complement = (~byte_data) + 1;
     result[0] = (complement & 0xf0) >> 4;
     result[1] = complement & 0x0f;
     result[2] = '\0';
@@ -443,7 +434,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         if(ins->mod == 0x00)
         {
             char *reg;
-            if(ins->w == 1)
+            if(ins->w == -1 || ins->w == 1)
                 reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
                 reg = register_addressing_8bit(ins->reg);
@@ -524,7 +515,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         }
         else if(ins->mod == 0x01)
         {
-            if(ins->w == 1)
+            if(ins->w == -1 || ins->w == 1)
                 reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
                 reg = register_addressing_8bit(ins->reg);
@@ -627,7 +618,7 @@ void MOD_RM_REG_process(instruction* ins, int offset)
         }
         else if(ins->mod == 0x02)
         {
-            if(ins->w == 1)
+            if(ins->w == -1 || ins->w == 1)
                 reg = register_addressing_16bit(ins->reg);
             else if(ins->w == 0)
                 reg = register_addressing_8bit(ins->reg);
@@ -1054,7 +1045,7 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
             strcpy(&ins->asem[offset], "], ");
             offset += 3;
 
-            if(ins->s == 0 && ins->w == 1 &&  flag == 1)
+            if(ins->s == 0 && ins->w == 1 && flag == 1)
             {
                 offset = read_data(ins, offset, 1);
                 ins->asem[offset] = '\0';
@@ -1262,7 +1253,7 @@ void MOD_RM_process(instruction* ins, int offset, int flag)
     }
     else if(ins->mod == 0x03)
     {
-        if(ins->w == 1)
+        if(ins->w == -1 || ins->w == 1)
             reg = register_addressing_16bit(ins->rm);
         else
             reg = register_addressing_8bit(ins->rm);

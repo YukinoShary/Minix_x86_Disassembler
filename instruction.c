@@ -189,17 +189,18 @@ void lea_LEAR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     node = malloc(sizeof(instruction_node));
     byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr += 1;
+    /*read the second byte*/
     ins->d = (byte_data & 0x02) >> 1;
     ins->w = byte_data & 0x01;
 
-    /*read the second byte*/
+    /*read the third byte*/
     *buffer_ptr += 1;
     byte_data = (int)read_buffer[*buffer_ptr];
     *buffer_ptr += 1;
     ins->mod = (byte_data & 0xc0) >> 6;
     ins->reg = (byte_data & 0x38) >> 3;
     ins->rm = byte_data & 0x07;
-    ins->length = 16;
+    ins->length = 24;
 
     strcat(&(ins->asem[0]), "LEA ");
     offset = 4;
@@ -318,17 +319,18 @@ void IDRM_4_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     *buffer_ptr += 1;
     ins->mod = (byte_data & 0xc0) >> 6;
     ins->rm = byte_data & 0x07;
+    ins->w = -1;
     ins->length = 16;
 
-    if(((byte_data & 0x1c) >> 2) == 0x00)
+    if(((byte_data & 0x1c) >> 3) == 0x00)
     {
         strcat(&ins->asem[0], "TEST ");
         offset = 5;
         MOD_RM_process(ins, offset, 1);
     }
-    else if(((byte_data & 0x1c) >> 2) == 0x03)
+    else if(((byte_data & 0x1c) >> 3) == 0x03)
     {
-        strcat(&ins->asem[0],"NGE ");
+        strcat(&ins->asem[0],"NEG ");
         offset = 4;
         MOD_RM_process(ins, offset, 0);
     }
@@ -398,6 +400,40 @@ void push_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
+void ff_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+{
+    printf("ff_oper\n");
+    int offset, byte_data;
+    instruction_node* node;
+    node = malloc(sizeof(instruction_node));
+    /*read the second byte*/
+    *buffer_ptr += 1;
+    byte_data = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr += 1;
+    ins->length = 16;
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->rm = byte_data & 0x07;
+    ins->w = -1;/*for MOD_RM_process*/
+    if(((byte_data & 0x38) >> 3) == 0x06)
+    {
+        strcpy(&ins->asem[0], "PUSH ");
+        offset = 5;
+        MOD_RM_process(ins, offset, 0);
+    }
+    else if(((byte_data & 0x38) >> 3) == 0x04)
+    {
+        strcpy(&ins->asem[0], "JMP ");
+        offset = 4;
+        MOD_RM_process(ins, offset, 0);
+    }
+    node->ins = ins;
+    list_add(node);
+    if(flag == 1)
+    {
+        
+    }
+}
+
 void call_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
 {
     printf("call_DS_oper\n");
@@ -447,6 +483,7 @@ void jmp_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     *buffer_ptr += 1;
     strcat(&(ins->asem[0]), "JMP ");
     offset = 4;
+    ins->length = 8;
     offset = read_disp(ins, offset, 1);
     ins->asem[offset] = '\0';
     node->ins = ins;
@@ -541,8 +578,9 @@ void LOGIC_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     byte_data = (int)read_buffer[*read_buffer];
     *buffer_ptr += 1;
     ins->length = 16;
-    ins->mod = byte_data & 0xc0 >> 6;
-    ins->rm = byte_data & 0x03;
+    ins->mod = (byte_data & 0xc0) >> 6;
+    ins->rm = byte_data & 0x07;
+    ins->w = -1;
 
     if(((byte_data & 0x38) >> 3) == 0x04)
     {
@@ -572,6 +610,7 @@ void je_JEZ_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     /*read the second byte*/
     *buffer_ptr += 1;
     ins->low_disp = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr += 1;
     ins->length = 16;
     strcat(&ins->asem[0], "je 00");
     offset = 5;
@@ -598,7 +637,7 @@ void pop_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     *buffer_ptr += 1;
     ins->length = 8;
     ins->reg = byte_data & 0x07;
-    strcat(&ins->asem[0], "pop ");
+    strcat(&ins->asem[0], "POP ");
     offset = 4;
     reg = register_addressing_16bit(ins->reg);
     strcat(&ins->asem[0], reg);
@@ -836,9 +875,11 @@ void in_FP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
         strcat(&ins->asem[0], register_addressing_8bit(0));
     }
     offset += 2;
-    strcat(&ins->asem[0], ins->port);
+    decimalToHexadecimal(ins->port, hexadecimal);
+    strcat(&ins->asem[0], hexadecimal);
     offset += 2;
     ins->asem[offset] = '\0';
+    free(hexadecimal);
     node->ins = ins;
     list_add(node);
     if(flag == 1)
@@ -941,6 +982,36 @@ void sbb_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     ins->asem[offset] = '\0';
     free(hexadecimal);
 
+    node->ins = ins;
+    list_add(node);
+    if(flag == 1)
+    {
+
+    }
+}
+
+void jmp_DSS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+{
+    printf("jmp_DSS_oper\n");
+    instruction_node* node;
+    int offset;
+    char* hexadecimal;
+    hexadecimal = malloc(8);
+    node = malloc(sizeof(instruction_node));
+    /*read the second byte*/
+    *buffer_ptr += 1;
+    ins->low_disp = (int)read_buffer[*buffer_ptr];
+    *buffer_ptr += 1;
+    ins->length = 16;
+    strcpy(&ins->asem[0], "JMP SHORT ");
+    offset = 10;
+    decimalToHexadecimal(ins->low_disp, hexadecimal);
+    strcat(&ins->asem[0], "00");
+    offset += 2;
+    strcat(&ins->asem[0], hexadecimal);
+    offset += 2;
+    ins->asem[offset] = '\0';
+    free(hexadecimal);
     node->ins = ins;
     list_add(node);
     if(flag == 1)

@@ -243,7 +243,7 @@ void (*instruction_func[256])(instruction*, char*, int*, int, int) =
     /*this is the line e8 */call_DS_oper,
     /*this is the line e9 */jmp_DS_oper,
     /*this is the line ea */NULL,
-    /*this is the line eb */NULL,
+    /*this is the line eb */jmp_DSS_oper,
     /*this is the line ec */in_VP_oper,
     /*this is the line ed */in_VP_oper,
     /*this is the line ee */NULL,
@@ -263,7 +263,7 @@ void (*instruction_func[256])(instruction*, char*, int*, int, int) =
     /*this is the line fc */NULL,
     /*this is the line fd */NULL,
     /*this is the line fe */NULL,
-    /*this is the line ff */NULL
+    /*this is the line ff */ff_oper
 };
 
 int main(int argc, char* argv[])
