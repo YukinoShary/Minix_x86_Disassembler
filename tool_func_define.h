@@ -7,6 +7,8 @@ const char hexadecimal_table[16];
 const char* register_16bit_table[8];
 const char* register_8bit_table[8];
 int register_status[8];
+unsigned char* virtual_memory;
+int *mem_ptr;
 
 void asem_output(instructions_list* list);
 void list_add(instruction_node* node);

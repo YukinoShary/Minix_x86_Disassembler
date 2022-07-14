@@ -96,32 +96,29 @@ void mov_I2R_interp(instruction* ins)
     }   
 }
 
-void int_TS_interp(instruction* ins, int type, unsigned char* read_buffer, int* buffer_ptr, int data_start)
+void int_TS_interp(instruction* ins, int type, unsigned char* read_buffer, int* buffer_ptr)
 {
-    int address, byte_data, i;
+    int byte_data, i;
     int data_set[8];
     int buffer[8];
     message* msgptr;
     i = 0;
     if(type == 36)
     {
-        address = register_status[0x03];
+        mem_ptr = register_status[0x03];
         while(i < 8)
         {
-            *buffer_ptr = address + data_start;
             /*big endian low*/
-            byte_data = (int)read_buffer[*buffer_ptr];
+            byte_data = (int)virtual_memory[*mem_ptr];
             data_set[i] = byte_data;
-            *buffer_ptr += 1;
+            *mem_ptr += 1;
             /*big endian high*/
-            byte_data = (int)read_buffer[*buffer_ptr];
+            byte_data = (int)virtual_memory[*mem_ptr];
             data_set[i] += byte_data << 8;
-            *buffer_ptr += 1;
+            *mem_ptr += 1;
             i ++;
         }
         
-        msgptr->m_source = data_set[0];
-        msgptr->m_type = data_set[1];
         call_vec[msgptr->m_type](msgptr);
     }
 }

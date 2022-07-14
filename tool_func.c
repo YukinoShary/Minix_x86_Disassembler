@@ -4,11 +4,12 @@ const char hexadecimal_table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
 const char *register_16bit_table[8] = {"AX\0", "CX\0", "DX\0", "BX\0", "SP\0", "BP\0", "SI\0", "DI\0"};
 const char *register_8bit_table[8] = {"AL\0", "CL\0", "DL\0", "BL\0", "AH\0", "CH\0", "DH\0", "BH\0"};
 int register_status[8];
+unsigned char* virtual_memory;
+int *mem_ptr;
 
 unsigned char* read_buffer;         
 instructions_list* asem_result;     /*save result*/
 int *buffer_ptr; 
-
 
 void asem_output(instructions_list* list)
 {

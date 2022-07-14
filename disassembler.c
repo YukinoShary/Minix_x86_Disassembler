@@ -6,7 +6,7 @@ void text_to_instruction(exec* hdr);
 void read_header(exec* hdr, char* openfile);
 
 /* when the flag == 1, it means interpreter mode*/
-void (*instruction_func[256])(instruction*, char*, int*, int, int) =
+void (*instruction_func[256])(instruction*, char*, int*, int) =
 {
     /*this is the line 1 */add_RMR2E_oper,
     /*this is the line 1 */add_RMR2E_oper,
@@ -274,6 +274,7 @@ int main(int argc, char* argv[])
     asem_result->length = 0;
     asem_result->front = NULL;
     buffer_ptr = malloc(sizeof(int));
+    virtual_memory = malloc(64 * 1024);
     hd = malloc(sizeof(exec));
     read_header(hd, argv[1]);
     text_to_instruction(hd);
@@ -286,7 +287,7 @@ void read_header(exec* hdr, char* openfile)
 {
     FILE* fp;
     size_t file_size;
-    int i;
+    int i, copy_ptr, copy_end;
     long binary2long[4];
     fp = fopen(openfile, "rb");
     fread(&hdr->a_magic[0], sizeof(unsigned char), 1, fp);
@@ -359,6 +360,17 @@ void read_header(exec* hdr, char* openfile)
     hdr->a_syms = (binary2long[3] << 24 ) +
         (binary2long[2] << 16) + (binary2long[1] << 8) + binary2long[0];
 
+    /*write data to virtual memory*/
+    copy_ptr = *buffer_ptr + (int)hdr->a_text;
+    *mem_ptr = copy_ptr;
+    copy_end = copy_ptr + (int)hdr->a_data;
+    i = 0;
+    while(copy_end - copy_ptr > 0)
+    {
+        virtual_memory[i] = read_buffer[copy_ptr];
+        i ++;
+        copy_ptr ++;
+    }
     /**buffer_ptr = (int)hdr->a_hdrlen;*/
     printf("a_hrdlen:%hhu\n", hdr->a_hdrlen);
     printf("buffer pointer position:%d\n", *buffer_ptr);
@@ -378,7 +390,7 @@ void text_to_instruction(exec* hdr)
         ins = malloc(sizeof(instruction));
         /*read the first byte*/
         byte_data = (int)read_buffer[*buffer_ptr];
-        instruction_func[byte_data](ins, read_buffer, buffer_ptr, hdr->a_data, 0);
+        instruction_func[byte_data](ins, read_buffer, buffer_ptr, 0);
     }    
 }
 

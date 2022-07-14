@@ -1,7 +1,7 @@
 #include "tool_func_define.h"
 
 /*TODO: deal with disp and data*/
-void mov_I2R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void mov_I2R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("mov_I2R_oper\n");
     int offset, byte_data;
@@ -61,7 +61,7 @@ void mov_I2R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     }
 }
 
-void int_TS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void int_TS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("int_TS_oper\n");
     int offset;
@@ -90,7 +90,7 @@ void int_TS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void add_RMR2E_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void add_RMR2E_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("add_RMR2E_oper\n");
     int byte_data;
@@ -120,7 +120,7 @@ void add_RMR2E_oper(instruction* ins, unsigned char* read_buffer, int* buffer_pt
     }
 }
 
-void mov_RMR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void mov_RMR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("mov_RMR_oper\n");
     int i, byte_data, offset;
@@ -151,7 +151,7 @@ void mov_RMR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     }
 }
 
-void xor_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void xor_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("xor_RMRE_oper\n");
     int byte_data, offset;
@@ -181,7 +181,7 @@ void xor_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     }
 }
 
-void lea_LEAR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void lea_LEAR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("lea_LEAR_oper\n");
     int byte_data, offset;
@@ -213,7 +213,7 @@ void lea_LEAR_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     }
 }
 
-void IRM_2_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void IRM_2_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("IRM_2_oper\n");
     int offset, byte_data;
@@ -272,7 +272,7 @@ void IRM_2_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     
 }
 
-void jnb_JNBAE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jnb_JNBAE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jnb_JNBAE_oper\n");
     int offset;
@@ -303,7 +303,7 @@ void jnb_JNBAE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_pt
     }   
 }
 
-void IDRM_4_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void IDRM_4_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("IDRM_oper\n");
     int offset, byte_data;
@@ -344,7 +344,7 @@ void IDRM_4_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void jne_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jne_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jne_oper\n");
     int offset, byte_data;
@@ -373,7 +373,7 @@ void jne_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int
     }
 }
 
-void push_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void push_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("push_R_oper\n");
     int offset, byte_data;
@@ -400,7 +400,7 @@ void push_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void ff_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void ff_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("ff_oper\n");
     int offset, byte_data;
@@ -434,7 +434,7 @@ void ff_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int 
     }
 }
 
-void call_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void call_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("call_DS_oper\n");
     int offset;
@@ -458,7 +458,7 @@ void call_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     }
 }
 
-void hlt_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void hlt_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("htl_oper\n");
     instruction_node* node;
@@ -474,7 +474,7 @@ void hlt_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int
     }
 }
 
-void jmp_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jmp_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jmp_oper\n");
     int offset;
@@ -494,7 +494,7 @@ void jmp_DS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void cbw_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void cbw_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("cbw_oper\n");
     instruction_node* node;
@@ -510,7 +510,7 @@ void cbw_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int
     }
 }
 
-void dec_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void dec_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("dec_R_oper\n");
     int byte_data, offset;
@@ -536,7 +536,7 @@ void dec_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     }
 }
 
-void jl_JLNGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jl_JLNGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jl_JLNGE_oper\n");
     instruction_node* node;
@@ -562,7 +562,7 @@ void jl_JLNGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     }
 }
 
-void LOGIC_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void LOGIC_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("LOGIC_oper\n");
     instruction_node* node;
@@ -598,7 +598,7 @@ void LOGIC_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     }
 }
 
-void je_JEZ_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void je_JEZ_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("je_JEZ_oper\n");
     instruction_node* node;
@@ -626,7 +626,7 @@ void je_JEZ_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void pop_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void pop_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("pop_R_oper\n");
     instruction_node* node;
@@ -651,7 +651,7 @@ void pop_R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     }
 }
 
-void jnl_JNLGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jnl_JNLGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jnl_JNLGE_oper\n");
     int offset;
@@ -682,7 +682,7 @@ void jnl_JNLGE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_pt
     }   
 }
 
-void or_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void or_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("or_RMRE_oper\n");
     int offset, byte_data;
@@ -712,7 +712,7 @@ void or_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     }  
 }
 
-void or_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void or_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("or_IA_oper\n");
     int offset, byte_data;
@@ -747,7 +747,7 @@ void or_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     } 
 }
 
-void ret_WS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void ret_WS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("ret_WS_oper\n");
     instruction_node* node;
@@ -763,7 +763,7 @@ void ret_WS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     } 
 }
 
-void ret_WSAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void ret_WSAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("ret_WSAI_oper\n");
     int offset, byte_data;
@@ -798,7 +798,7 @@ void ret_WSAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     } 
 }
 
-void ret_I_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void ret_I_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("ret_I_oper\n");
     instruction_node* node;
@@ -814,7 +814,7 @@ void ret_I_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     } 
 }
 
-void ret_IAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void ret_IAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("ret_IAI_oper\n");
     int offset, byte_data;
@@ -849,7 +849,7 @@ void ret_IAI_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     } 
 }
 
-void in_FP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void in_FP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("in_FP_oper\n");
     instruction_node* node;
@@ -888,7 +888,7 @@ void in_FP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     } 
 }
 
-void in_VP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void in_VP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("in_VP_oper\n");
     instruction_node* node;
@@ -916,7 +916,7 @@ void in_VP_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, i
     } 
 }
 
-void sbb_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void sbb_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("sbb_RMRE_oper\n");
     instruction_node* node;
@@ -943,7 +943,7 @@ void sbb_RMRE_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr
     }
 }
 
-void sbb_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void sbb_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("sbb_IA_oper\n");
     instruction_node* node;
@@ -990,7 +990,7 @@ void sbb_IA_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     }
 }
 
-void jmp_DSS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int data_start, int flag)
+void jmp_DSS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
 {
     printf("jmp_DSS_oper\n");
     instruction_node* node;

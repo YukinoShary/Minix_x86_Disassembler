@@ -128,5 +128,4 @@ typedef struct message
 #define m6_i3  m_u.m_m6.m6i3
 #define m6_l1  m_u.m_m6.m6l1
 #define m6_f1  m_u.m_m6.m6f1
-
 #endif
