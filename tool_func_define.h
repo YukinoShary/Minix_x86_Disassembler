@@ -22,6 +22,7 @@ void MOD_RM_REG_process(instruction* ins, int offset);
 void MOD_RM_process(instruction* ins, int offset, int flag);
 int read_disp(instruction* ins, int offset, int flag);
 int read_data(instruction* ins, int offset, int flag);
+
 void intialize_register_table();
 void register_writeline();
 void register_content_output();

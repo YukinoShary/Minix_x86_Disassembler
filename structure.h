@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <unistd.h>
 #define M1                 1
 #define M3                 3
 #define M4                 4
@@ -128,4 +129,15 @@ typedef struct message
 #define m6_i3  m_u.m_m6.m6i3
 #define m6_l1  m_u.m_m6.m6l1
 #define m6_f1  m_u.m_m6.m6f1
+
+/* The following names are synonyms for the variables in the output message. */
+#define reply_type    m1.m_type
+#define reply_l1      m1.m2_l1
+#define reply_i1      m1.m1_i1
+#define reply_i2      m1.m1_i2
+#define reply_t1      m1.m4_l1
+#define reply_t2      m1.m4_l2
+#define reply_t3      m1.m4_l3
+#define reply_t4      m1.m4_l4
+#define reply_t5      m1.m4_l5
 #endif

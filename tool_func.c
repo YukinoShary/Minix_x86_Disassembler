@@ -180,7 +180,7 @@ void decimalToHexadecimal(int decimal, char* result)
 void byte_complement(int byte_data, char* result)
 {
     int complement;
-    complement = (~byte_data) + 1;
+    complement = ~byte_data + 1;
     result[0] = (complement & 0xf0) >> 4;
     result[1] = complement & 0x0f;
     result[2] = '\0';

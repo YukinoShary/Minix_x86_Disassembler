@@ -1,4 +1,5 @@
 #include "tool_func_define.h"
+#include "interpreter_define.h"
 
 /*TODO: deal with disp and data*/
 void mov_I2R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, int flag)
@@ -57,7 +58,7 @@ void mov_I2R_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr,
     list_add(node);
     if(flag == 1)
     {
-        
+        mov_I2R_interp(ins);
     }
 }
 
@@ -86,7 +87,7 @@ void int_TS_oper(instruction* ins, unsigned char* read_buffer, int* buffer_ptr, 
     list_add(node);
     if(flag == 1)
     {
-        /*int_TS_interp(ins, ins->type, data_start)*/
+        int_TS_interp(ins, ins->type);
     }
 }
 

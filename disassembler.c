@@ -2,7 +2,7 @@
 #include "tool_func_define.h"
 #define BUFFER_SIZE 32 * 1024
 
-void text_to_instruction(exec* hdr);
+void text_to_instruction(exec* hdr, int flag);
 void read_header(exec* hdr, char* openfile);
 
 /* when the flag == 1, it means interpreter mode*/
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
     virtual_memory = malloc(64 * 1024);
     hd = malloc(sizeof(exec));
     read_header(hd, argv[1]);
-    text_to_instruction(hd);
+    text_to_instruction(hd, atoi(argv[2]));
     asem_output(asem_result);
     free(read_buffer);
     free(asem_result);
@@ -378,7 +378,7 @@ void read_header(exec* hdr, char* openfile)
 }
 
 
-void text_to_instruction(exec* hdr)
+void text_to_instruction(exec* hdr, int flag)
 {
     int i, text_end, byte_data;
     text_end = *buffer_ptr + (int)(hdr->a_text);
@@ -390,7 +390,7 @@ void text_to_instruction(exec* hdr)
         ins = malloc(sizeof(instruction));
         /*read the first byte*/
         byte_data = (int)read_buffer[*buffer_ptr];
-        instruction_func[byte_data](ins, read_buffer, buffer_ptr, 0);
+        instruction_func[byte_data](ins, read_buffer, buffer_ptr, flag);
     }    
 }
 

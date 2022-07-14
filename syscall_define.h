@@ -1,3 +1,4 @@
+#include "tool_func_define.h"
 #ifndef _SYSDEF_H
 #define _SYSDEF_H
 
@@ -69,3 +70,9 @@
 #define REBOOT		  76
 #define SVRCTL		  77
 #endif
+
+void kernel_main(char* ptr);
+void reply(int who, int result);
+void send(int who, message* m);
+int do_write();
+int do_exit();
